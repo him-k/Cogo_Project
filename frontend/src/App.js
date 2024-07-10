@@ -71,11 +71,12 @@
 // export default App;
 
 // App.js
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react'; // Added useRef for scrolling
 import SelectAsync from './SelectAsync';
 import ContainerDetail from './ContainerDetail';
 import { createShipment } from './api';  // Import API functions
 import { locations } from './data';
+import SearchButton from './searchButton.js';
 import './App.css';
 
 const fetchOptions = (inputValue) => {
@@ -98,7 +99,8 @@ const fetchOptions = (inputValue) => {
 const App = () => {
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
-
+  const containerDetailRef = useRef(null); // Create a ref for the container detail section
+   const [showContainerDetail, setShowContainerDetail] = useState(false); // Manage visibility of ContainerDetail
   const handleContainerDetailsApply = async (details) => {
     console.log('Container details:', details);
     if (origin && destination) {
@@ -120,23 +122,47 @@ const App = () => {
     }
   };
 
+   const handleSearchClick = () => {
+    setShowContainerDetail(true); // Show the ContainerDetail section on search click
+    setTimeout(() => {
+      containerDetailRef.current.scrollIntoView({ behavior: 'smooth' }); // Scroll to container detail section on search click
+    }, 100);
+  };
+
+  const isSearchDisabled = !origin || !destination; // Disable search button if origin or destination is not selected
+
+   
+
   return (
     <div className="container">
+      <div className="select-async-wrapper">
       <SelectAsync
         loadOptions={fetchOptions}
         onChange={setOrigin}
         value={origin}
         label="Origin Point"
       />
+      </div>
+
+      <div className="select-async-wrapper">
       <SelectAsync
         loadOptions={fetchOptions}
         onChange={setDestination}
         value={destination}
         label="Destination Point"
       />
+       </div>
+      <div className="select-async-wrapper">
+        <SearchButton onClick={handleSearchClick} disabled={isSearchDisabled} /> {/* Added SearchButton */}
+      </div>
+      {showContainerDetail && ( // Conditionally render ContainerDetail
+        <div id="container-detail" className="select-async-wrapper" ref={containerDetailRef}> {/* Added ref to this div */}
+          <ContainerDetail onApply={handleContainerDetailsApply} />
+        </div>
+      )}
+   
       
-      <h1>Container Booking</h1>
-      <ContainerDetail onApply={handleContainerDetailsApply} />
+      
     </div>
   );
 };
