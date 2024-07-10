@@ -1,0 +1,26 @@
+[
+  {
+    "value": "standard",
+    "label": "Standard (Dry)"
+  },
+  {
+    "value": "refer",
+    "label": "Refrigerated (Reefer)"
+  },
+  {
+    "value": "open_top",
+    "label": "Open Top"
+  },
+  {
+    "value": "flat_rack",
+    "label": "Flat Rack"
+  },
+  {
+    "value": "iso_tank",
+    "label": "ISO Tank"
+  },
+  {
+    "value": "open_side",
+    "label": "Open Side (One Door Open)"
+  }
+]

@@ -1,0 +1,52 @@
+.container-detail {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.apply-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.apply-button:hover {
+    background-color: #45a049;
+}
+
+.applied-details-box {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+        position: relative;
+}
+
+.applied-details-box h3 {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.applied-details-box p {
+    margin: 0;
+    font-size: 1.2em;
+}
+.applied-details {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: yellow;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: calc(100% - 2px);
+    /* Adjust width to account for border */
+}
