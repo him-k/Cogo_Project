@@ -9,12 +9,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+#SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
-# database_url =  "postgresql://postgres:himani@localhost:5432/search"
+database_url =  "postgresql://postgres:himani@localhost:5432/newdb"
 
 #creating SQLAlchemy engine
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(database_url)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

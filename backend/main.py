@@ -9,7 +9,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001"],  # Replace with your frontend URL
+    allow_origins=["http://localhost:3000"],  # Replace with your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -63,7 +63,7 @@ def get_searches(db: Session = Depends(get_db) , skip : int =0 , limit : int = 1
 
 @app.put("/shipments/{shipment_id}", response_model=schemas.Shipment)
 def update_shipment(shipment_id: int, shipment: schemas.Shipment_detailsUpdate, db: Session = Depends(get_db)):
-    db_shipment = db.query(models.Shipment_details).filter(schemas.Shipment_details.id == shipment_id).first()
+    db_shipment = db.query(models.Shipment_details).filter(models.Shipment_details.id == shipment_id).first()
     if db_shipment is None:
         raise HTTPException(status_code=404, detail="Shipment not found")
     for field, value in shipment.dict(exclude_unset=True).items():

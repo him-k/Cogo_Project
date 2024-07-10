@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {getShipment} from './api';
 import './list.css'; // Create a CSS file for styling
 
 const ViewShipments = () => {
   const [shipments, setShipments] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchShipments = async () => {
@@ -17,6 +19,10 @@ const ViewShipments = () => {
 
     fetchShipments();
   }, []);
+
+  const handleEditClick = (id) => {
+    navigate(`/edit/${id}`);
+  };
 
   return (
     <div className="view-shipments">
@@ -32,6 +38,7 @@ const ViewShipments = () => {
             <th>Commodity</th>
             <th>Total Weight</th>
             <th>Count</th>
+            <th>Edit</th>
           </tr>
         </thead>
         <tbody>
@@ -43,8 +50,11 @@ const ViewShipments = () => {
               <td>{shipment.size}</td>
               <td>{shipment.type}</td>
               <td>{shipment.commodity}</td>
-              <td>{shipment.total_weight}</td>
+              <td>{shipment.weight}</td>
               <td>{shipment.count}</td>
+              <td>
+                <button onClick={() => handleEditClick(shipment.id)}>Edit</button>
+              </td>
             </tr>
           ))}
         </tbody>

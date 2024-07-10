@@ -5,7 +5,7 @@ import containerSizes from './container-size.json';
 import { COMMODITY_NAME_MAPPING } from './commodities.js';
 import './container.css';
 
-const ContainerDetail = ({ onApply }) => {
+const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
   console.log('COMMODITY_NAME_MAPPING:', COMMODITY_NAME_MAPPING);
 
   const commodities = Object.keys(COMMODITY_NAME_MAPPING).map((key) => ({
@@ -14,16 +14,17 @@ const ContainerDetail = ({ onApply }) => {
   }));
 
   const initialContainerDetails = {
-    size: containerSizes[0]?.label || 'Default Size',
-    type: containerTypes[0]?.label || 'Default Type',
-    commodity: commodities[0]?.label || 'Default Commodity',
-    weight: '18 MT',
-    count: 1,
+    size: initialData?.size || containerSizes[0]?.label || 'Default Size',
+    type: initialData?.type || containerTypes[0]?.label || 'Default Type',
+    commodity: initialData?.commodity || commodities[0]?.label || 'Default Commodity',
+    weight: initialData?.weight || '18 MT',
+    count: initialData?.count || 1,
   };
 
   const [details, setDetails] = useState(initialContainerDetails);
   const [appliedDetails, setAppliedDetails] = useState(initialContainerDetails);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     if (commodities.length === 0) {
@@ -39,8 +40,10 @@ const ContainerDetail = ({ onApply }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setAppliedDetails(details);
-    onApply(details);
+    onApply(details , eId , orr , dest);
     setDropdownOpen(false);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
   };
 
   return (
@@ -133,7 +136,11 @@ const ContainerDetail = ({ onApply }) => {
           <button type="submit" className="apply-button">Apply</button>
         </form>
       )}
-
+      {showPopup && (
+        <div className="popup">
+          Your changes have been saved!
+          </div>
+      )}
     </div>
   );
 };
