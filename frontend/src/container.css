@@ -1,10 +1,14 @@
 
 
-.container-detail {
+/* .container-detail {
     padding: 20px;
-    border: 1px solid #ccc;
+
+    border: 1px solid #f6943f;
     border-radius: 5px;
-}
+  
+        /* Ensure the paragraph maintains its position */
+        /* display: inline-block; */
+/* } */ */
 
 .form-group {
     margin-bottom: 15px;
@@ -38,26 +42,64 @@
 }
 
 .current-details-box {
-    display: inline-block;
+    /* display: inline-block; */
     /* Ensures the box size fits the content */
-    padding: 2px 5px;
+    /* padding: 2px 5px;
     /* Reduced padding */
-    cursor: pointer;
-    margin: 10px 0;
+    /* cursor: pointer; */
+    /* margin: 10px 0; */
     border-radius: 5px;
     background-color: #ffffff;
     /* Optional background color */
     border: 1px solid #ccc;
     /* Adding a border for the box */
-    user-select: none;
+    user-select: none; 
     /* Prevent cursor (caret) from appearing */
+
+}
+.dropdown-form{
+    border-radius: 5px;
+       
+        /* Optional background color */
+        border: 1px solid #0da353;
+        /* Adding a border for the box */
+        user-select: none;
+        width: 400px;
+        margin-top: 20px;
+        margin-left: -50px;
+}
+.radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow the items to wrap to the next line */
+    gap: 10px;
+    /* Add some space between the radio buttons */
 }
 
+.radio-group label {
+    display: flex;
+    align-items: center;
+}
+
+.container {
+    width: 300px;
+    /* Set a fixed width for the container */
+    border: 1px solid #ab4f4f;
+    padding: 20px;
+}
+.form-group{
+    background-color: hsl(0, 0%, 100%);
+}
+.apply-button{
+    margin-top: 8px;
+    margin-left: 25%;
+}
 .current-details-box p {
     position: inline-block;
     /* Ensure the paragraph maintains its position */
     display: inline-block;
     /* Ensure the paragraph wraps tightly around the content */
+
 }
 
 .dropdown-toggle {
@@ -73,7 +115,7 @@
     left: 50%;
     transform: translateX(-50%);
     padding: 10px 20px;
-    background-color: #4caf50;
+    background-color: #ffffff;
     color: white;
     border-radius: 4px;
     z-index: 1000;

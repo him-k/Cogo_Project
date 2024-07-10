@@ -1,0 +1,19 @@
+.view-shipments {
+    padding: 20px;
+}
+
+.view-shipments table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.view-shipments th,
+.view-shipments td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.view-shipments th {
+    background-color: #f2f2f2;
+    text-align: left;
+}

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import containerTypes from './container-types.json';
 import containerSizes from './container-size.json';
 import { COMMODITY_NAME_MAPPING } from './commodities.js';
+// import ViewButton from './ViewButton'; // Import ViewButton component
 import './container.css';
 
 const ContainerDetail = ({ onApply }) => {
@@ -37,25 +38,24 @@ const ContainerDetail = ({ onApply }) => {
     setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setAppliedDetails(details);
-    onApply(details);
-    setDropdownOpen(false);
-    setShowPopup(true);
-    setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
-  };
+ const handleSubmit = (e) => {
+  e.preventDefault();
+  setAppliedDetails(details);
+  onApply(details); // Callback to update parent state and show ViewButton
+  setDropdownOpen(false);
+  setShowPopup(true);
+  setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
+};
+
 
   return (
-    
-
 
      <div className="container-detail">
       <h2>Container Details</h2>
       <div className="current-details-box" onClick={() => setDropdownOpen(!dropdownOpen)}>
        
         <p><mark>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</mark></p>
-        <span className="dropdown-toggle">{dropdownOpen ? 'v' : '^'}</span>
+        <button type="button">{dropdownOpen ? 'v' : '^'}</button>
         {/* {dropdownOpen && (
           <div className="applied-details">
             {<p>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</p> }
@@ -142,7 +142,7 @@ const ContainerDetail = ({ onApply }) => {
           Your changes have been saved!
         </div>
       )}
-
+{/* {showPopup && <ViewButton to="/view-page" text="View Details" />} Show ViewButton after changes saved */}
     </div>
   );
 };
