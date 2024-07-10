@@ -27,7 +27,7 @@
     border-radius: 5px;
     background-color: #f9f9f9;
     cursor: pointer;
-        position: relative;
+    position: relative;
 }
 
 .applied-details-box h3 {
@@ -35,10 +35,53 @@
     margin-bottom: 10px;
 }
 
+.current-details-box {
+    display: inline-block;
+    /* Ensures the box size fits the content */
+    padding: 2px 5px;
+    /* Reduced padding */
+    cursor: pointer;
+    margin: 10px 0;
+    border-radius: 5px;
+    background-color: #ffffff;
+    /* Optional background color */
+    border: 1px solid #ccc;
+    /* Adding a border for the box */
+    user-select: none;
+    /* Prevent cursor (caret) from appearing */
+}
+
+.current-details-box p {
+    position: inline-block;
+    /* Ensure the paragraph maintains its position */
+    display: inline-block;
+    /* Ensure the paragraph wraps tightly around the content */
+}
+
+.dropdown-toggle {
+    margin-left: 7px;
+    /* Adjust to create space between <p> and ^ */
+    user-select: none;
+    /* Prevent cursor (caret) from appearing */
+}
+
+.popup {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 4px;
+    z-index: 1000;
+}
+
 .applied-details-box p {
     margin: 0;
     font-size: 1.2em;
 }
+
 .applied-details {
     position: absolute;
     top: 100%;

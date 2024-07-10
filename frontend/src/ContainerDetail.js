@@ -131,7 +131,6 @@ const ContainerDetail = ({ onApply }) => {
             />
           </div>
           <button type="submit" className="apply-button">Apply</button>
-
         </form>
       )}
 

@@ -12,9 +12,13 @@
   border-radius: 5px;
 }
 
-.container-details-display {
-  margin-top: 20px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  /* Space between components */
+  padding: 20px;
+}
+.select-async-wrapper {
+  flex: 1;
 }

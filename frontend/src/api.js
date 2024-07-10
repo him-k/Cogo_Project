@@ -7,10 +7,10 @@ export const createShipment=async(data)=>{
         return response.data;
 };
 
-// export const getShipment=async(shipmentId)=>{
-//     const response=await axios.get(`${api_url}/shipments/${shipmentId}`);
-//         return response.data;
-// };
+export const getShipment=async()=>{
+    const response=await axios.get(`${api_url}/shipments/`);
+        return response.data;
+};
 // export const updateShipment=async(data)=>{
 //     const response=await axios.put(`${api_url}/shipments/${shipmentId}`,data);
 //         return response.data;
