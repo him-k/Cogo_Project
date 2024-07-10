@@ -5,7 +5,7 @@ import containerSizes from './container-size.json';
 import { COMMODITY_NAME_MAPPING } from './commodities.js';
 import './container.css';
 
-const ContainerDetail = ({ onApply }) => {
+const ContainerDetail = ({ onApply , eId , orr , dest }) => {
   console.log('COMMODITY_NAME_MAPPING:', COMMODITY_NAME_MAPPING);
 
   const commodities = Object.keys(COMMODITY_NAME_MAPPING).map((key) => ({
@@ -24,6 +24,7 @@ const ContainerDetail = ({ onApply }) => {
   const [details, setDetails] = useState(initialContainerDetails);
   const [appliedDetails, setAppliedDetails] = useState(initialContainerDetails);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     if (commodities.length === 0) {
@@ -39,8 +40,10 @@ const ContainerDetail = ({ onApply }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setAppliedDetails(details);
-    onApply(details);
+    onApply(details , eId , orr , dest);
     setDropdownOpen(false);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
   };
 
   return (
@@ -52,7 +55,7 @@ const ContainerDetail = ({ onApply }) => {
       <div className="current-details-box" onClick={() => setDropdownOpen(!dropdownOpen)}>
        
         <p><mark>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</mark></p>
-        <button type="button">{dropdownOpen ? 'v' : '^'}</button>
+        <span className="dropdown-toggle">{dropdownOpen ? 'v' : '^'}</span>
         {/* {dropdownOpen && (
           <div className="applied-details">
             {<p>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</p> }
@@ -133,6 +136,11 @@ const ContainerDetail = ({ onApply }) => {
           <button type="submit" className="apply-button">Apply</button>
 
         </form>
+      )}
+      {showPopup && (
+        <div className="popup">
+          Your changes have been saved!
+        </div>
       )}
 
     </div>
