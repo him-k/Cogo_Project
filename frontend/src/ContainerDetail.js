@@ -47,10 +47,7 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
   };
 
   return (
-    
-
-
-     <div className="container-detail">
+    <div className="container-detail">
       <h2>Container Details</h2>
       <div className="current-details-box" onClick={() => setDropdownOpen(!dropdownOpen)}>
        

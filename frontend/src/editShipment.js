@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getShipmentById, updateShipment } from './api';
 import ContainerDetail from './ContainerDetail';
-
+import './editShipment.css';
 const EditShipment = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -43,12 +43,26 @@ const EditShipment = () => {
       console.error('Origin or destination is missing.');
     }
   }
-
+  
+  
+  
   if (!shipment) return <div>Loading...</div>;
 
   return (
     <div className="edit-shipment">
       <h1>Edit Container Details</h1>
+      <div className="shipment-box">
+        <div className="shipment-box-item">
+          <div className="box-label">Origin :</div>
+          <div className="box-value">{shipment.origin}</div>
+        </div>
+      </div>
+        <div className="shipment-box">
+        <div className="shipment-box-item">
+          <div className="box-label">Destination :</div>
+          <div className="box-value">{shipment.destination}</div>
+        </div>
+      </div>
       <ContainerDetail onApply={(details) => handleContainerDetailsApply(details, id, shipment.origin, shipment.destination)} 
         initialData={shipment}
       />

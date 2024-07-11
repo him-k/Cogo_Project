@@ -36,6 +36,8 @@ def get_db():
 @app.post("/shipments/", response_model=schemas.Shipment)
 def create_shipment(shipment: schemas.Shipment_detailsCreate, db: Session = Depends(get_db)):
     print(f"Received shipment data: {shipment.dict()}")
+    if(shipment.origin==shipment.destination):
+        return -1
     try:
         db_shipment = models.Shipment_details(**shipment.dict())
         db.add(db_shipment)
@@ -56,7 +58,7 @@ def read_shipment(shipment_id: int, db: Session = Depends(get_db)):
 
 @app.get("/shipments/", response_model=List[schemas.Shipment])
 def get_searches(db: Session = Depends(get_db) , skip : int =0 , limit : int = 100):
-    db_searches = db.query(models.Shipment_details).offset(skip).limit(limit).all()
+    db_searches = db.query(models.Shipment_details).offset(skip).limit(limit)
     if not db_searches:
         raise HTTPException(status_code=404, detail="No Shipments found")
     return db_searches
@@ -68,6 +70,12 @@ def update_shipment(shipment_id: int, shipment: schemas.Shipment_detailsUpdate, 
         raise HTTPException(status_code=404, detail="Shipment not found")
     for field, value in shipment.dict(exclude_unset=True).items():
         setattr(db_shipment, field, value)
+
+    if shipment.origin == shipment.destination:
+        raise HTTPException(status_code=400, detail="INVALID REQUEST ORIGIN AND DESTINATION CANNOT BE THE SAME")
+
+    if shipment.count <= 0:
+        raise HTTPException(status_code=400, detail="INVALID REQUEST COUNT CANNOT BE NEGATIVE")
     db.commit()
     db.refresh(db_shipment)
     return db_shipment

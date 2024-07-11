@@ -18,4 +18,4 @@ export const updateShipment=async(data,id)=>{
 export const getShipmentById = async (shipmentId) => {
     const response = await axios.get(`${api_url}/shipments/${shipmentId}`);
     return response.data;
-  };
+};
