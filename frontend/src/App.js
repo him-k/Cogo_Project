@@ -4,16 +4,39 @@ import SelectAsync from './SelectAsync';
 import ContainerDetail from './ContainerDetail';
 import { createShipment , updateShipment} from './api';  // Import API functions
 import { locations } from './data';
+
+import axios from 'axios';
 import ViewShipments from'./list';
 import SearchButton from './searchButton.js';
 import EditShipment from './editShipment';
 import './App.css';
 
-const fetchOptions = (inputValue) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(
-        locations
+// const fetchOptions = (inputValue) => {
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       resolve(
+//         locations
+//           .filter((option) =>
+//             option.display_name.toLowerCase().includes(inputValue.toLowerCase())
+//           )
+//           .map((option) => ({
+//             value: option.id,
+//             label: option.display_name,
+//           }))
+//       );
+//     }, 1000);
+//   });
+// };
+
+const fetchOptions =async(inputValue) => {
+  try{
+    const response = await axios.get('https://api.stage.cogoport.io/list_locations', {
+      params: {
+        query: inputValue // Send inputValue as query parameter
+      }
+    });
+    const locations=response.data.list;
+    return locations
           .filter((option) =>
             option.display_name.toLowerCase().includes(inputValue.toLowerCase())
           )
@@ -21,9 +44,10 @@ const fetchOptions = (inputValue) => {
             value: option.id,
             label: option.display_name,
           }))
-      );
-    }, 1000);
-  });
+     }  catch (error) {
+            console.error('Error fetching locations:', error);
+            return [];
+        }
 };
 
 const Home = () => {
