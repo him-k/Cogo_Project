@@ -52,7 +52,7 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
       <div className="current-details-box" onClick={() => setDropdownOpen(!dropdownOpen)}>
        
         <p><mark>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</mark></p>
-        <button type="button">{dropdownOpen ? 'v' : '^'}</button>
+        <span className="dropdown-toggle">{dropdownOpen ? 'v' : '^'}</span>
         {/* {dropdownOpen && (
           <div className="applied-details">
             {<p>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</p> }
