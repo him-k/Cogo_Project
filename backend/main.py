@@ -1,11 +1,13 @@
-from fastapi import FastAPI,Depends,HTTPException , Query
+from fastapi import FastAPI, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
-import models,schemas
+import models, schemas
 from sqlalchemy import desc
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import uvicorn
+import requests
+
 app = FastAPI()
 
 app.add_middleware(
@@ -19,27 +21,72 @@ app.add_middleware(
 models.Base.metadata.create_all(bind=engine)
 
 def get_db():
-       db = SessionLocal()
-       try:
-           yield db
-       finally:
-           db.close()
-
-
-
-@app.post("/shipments/", response_model=schemas.Shipment)
-def create_shipment(shipment: schemas.Shipment_detailsCreate, db: Session = Depends(get_db)):
-    # add a check for start and end to not be same 
-    print(f"Received shipment data: {shipment.dict()}")
-    if(shipment.origin==shipment.destination):
-        return "INVALID REQUEST ORIGIN AND DESTINATION CAN NOT BE SAME"
+    db = SessionLocal()
     try:
-        db_shipment = models.Shipment_details(**shipment.dict())
+        yield db
+    finally:
+        db.close()
+
+def get_locations(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            locations = data.get("list", [])
+            if locations:
+                return locations
+            else:
+                return "The list of locations is empty."
+        except ValueError:
+            return "Failed to parse JSON response."
+    else:
+        return f"Failed to fetch data, status code: {response.status_code}"
+
+def search_id(location_name, url):
+    location_list = get_locations(url)
+    if isinstance(location_list, list):
+        for location in location_list:
+            if location.get("display_name") == location_name:
+                return location.get("id")
+        return f"No location found with the name {location_name}."
+    else:
+        return location_list
+
+url = "https://api.stage.cogoport.io/list_locations"
+
+@app.post("/shipments", response_model=schemas.Shipment)
+def create_shipment(shipment: schemas.Shipment_detailsCreate, db: Session = Depends(get_db)):
+    # Add a check for start and end to not be same
+    print(f"Received shipment data: {shipment.dict()}")
+    if shipment.origin == shipment.destination:
+        raise HTTPException(status_code=400, detail="INVALID REQUEST: ORIGIN AND DESTINATION CANNOT BE THE SAME")
+    
+    origin_id = search_id(shipment.origin, url)
+    print("--------------------")
+    print(origin_id)
+    # if isinstance(origin_id, str):
+    #     raise HTTPException(status_code=404, detail=origin_id)
+    print("--------------------")
+    destination_id = search_id(shipment.destination, url)
+
+    
+    shipment_data = shipment.dict()
+    shipment_data['origin'] = origin_id
+    shipment_data['destination'] = destination_id
+
+    try:
+        db_shipment = models.Shipment_details(**shipment_data)
         db.add(db_shipment)
         db.commit()
         db.refresh(db_shipment)
         print("Shipment saved to database.")
-        return db_shipment
+        
+        # Convert UUID fields to strings before returning the response
+        response_data = db_shipment.__dict__.copy()
+        response_data['origin'] = str(response_data['origin'])
+        response_data['destination'] = str(response_data['destination'])
+        
+        return response_data
     except Exception as e:
         print(f"Error saving shipment: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -49,16 +96,15 @@ def read_shipment(shipment_id: int, db: Session = Depends(get_db)):
     db_shipment = db.query(models.Shipment_details).filter(models.Shipment_details.id == shipment_id).first()
     if db_shipment is None:
         raise HTTPException(status_code=404, detail="Shipment not found")
-    return db_shipment
+    
+    # Convert UUID fields to strings before returning the response
+    response_data = db_shipment.__dict__.copy()
+    response_data['origin'] = str(response_data['origin'])
+    response_data['destination'] = str(response_data['destination'])
+    
+    return response_data
 
-# @app.get("/shipments/", response_model=List[schemas.Shipment])
-# def get_all_shipments(db: Session = Depends(get_db)):
-#     db_shipments = db.query(models.Shipment_details).all()
-#     if not db_shipments:
-#         raise HTTPException(status_code=404, detail="No Shipments found")
-#     return db_shipments
-
-@app.get("/shipments/", response_model=List[schemas.Shipment])
+@app.get("/shipments", response_model=List[schemas.Shipment])
 def get_all_shipments(
     page: int = Query(1, ge=1), 
     page_size: int = Query(5, ge=1), 
@@ -76,10 +122,18 @@ def get_all_shipments(
     if not db_shipments:
         raise HTTPException(status_code=404, detail="No Shipments found")
     
-    return db_shipments
+    # Convert UUID fields to strings before returning the response
+    response_data = []
+    for shipment in db_shipments:
+        shipment_data = shipment.__dict__.copy()
+        shipment_data['origin'] = str(shipment_data['origin'])
+        shipment_data['destination'] = str(shipment_data['destination'])
+        response_data.append(shipment_data)
+    
+    return response_data
 
-@app.put("/shipmentsOptionalUpdate/{shipment_id}",response_model=schemas.Shipment)
-def optinal_update(shipment_id:int,shipment:schemas.Shipment_detailsUpdateOptional,db: Session = Depends(get_db)):
+@app.put("/shipmentsOptionalUpdate/{shipment_id}", response_model=schemas.Shipment)
+def optional_update(shipment_id: int, shipment: schemas.Shipment_detailsUpdateOptional, db: Session = Depends(get_db)):
     db_shipment = db.query(models.Shipment_details).filter(models.Shipment_details.id == shipment_id).first()
     if db_shipment is None:
         raise HTTPException(status_code=404, detail="Shipment not found")
@@ -87,43 +141,50 @@ def optinal_update(shipment_id:int,shipment:schemas.Shipment_detailsUpdateOption
     # Check if both origin and destination are present in the update request
     if 'origin' in shipment.dict(exclude_unset=True) and 'destination' in shipment.dict(exclude_unset=True):
         if shipment.origin == shipment.destination:
-            raise HTTPException(status_code=400, detail="INVALID REQUEST ORIGIN AND DESTINATION CANNOT BE THE SAME")
+            raise HTTPException(status_code=400, detail="INVALID REQUEST: ORIGIN AND DESTINATION CANNOT BE THE SAME")
     
     # Check if count is present and valid
     if 'count' in shipment.dict(exclude_unset=True) and shipment.count <= 0:
-        raise HTTPException(status_code=400, detail="INVALID REQUEST COUNT CANNOT BE NEGATIVE")
+        raise HTTPException(status_code=400, detail="INVALID REQUEST: COUNT CANNOT BE NEGATIVE")
     
     for field, value in shipment.dict(exclude_unset=True).items():
         setattr(db_shipment, field, value)
     
     db.commit()
     db.refresh(db_shipment)
-    return db_shipment
-
+    
+    # Convert UUID fields to strings before returning the response
+    response_data = db_shipment.__dict__.copy()
+    response_data['origin'] = str(response_data['origin'])
+    response_data['destination'] = str(response_data['destination'])
+    
+    return response_data
 
 @app.put("/shipments/{shipment_id}", response_model=schemas.Shipment)
 def update_shipment(shipment_id: int, shipment: schemas.Shipment_detailsUpdate, db: Session = Depends(get_db)):
     db_shipment = db.query(models.Shipment_details).filter(models.Shipment_details.id == shipment_id).first()
-    db_shipment = db.query(models.Shipment_details).filter(models.Shipment_details.id == shipment_id).first()
     if db_shipment is None:
         raise HTTPException(status_code=404, detail="Shipment not found")
     
-
     # Check if both origin and destination are present in the update request
-    
     if shipment.origin == shipment.destination:
-        raise HTTPException(status_code=400, detail="INVALID REQUEST ORIGIN AND DESTINATION CANNOT BE THE SAME")
+        raise HTTPException(status_code=400, detail="INVALID REQUEST: ORIGIN AND DESTINATION CANNOT BE THE SAME")
 
     if shipment.count <= 0:
-        raise HTTPException(status_code=400, detail="INVALID REQUEST COUNT CANNOT BE NEGATIVE")
-    
+        raise HTTPException(status_code=400, detail="INVALID REQUEST: COUNT CANNOT BE NEGATIVE")
 
     for field, value in shipment.dict(exclude_unset=True).items():
         setattr(db_shipment, field, value)
+    
     db.commit()
     db.refresh(db_shipment)
-    return db_shipment
-
+    
+    # Convert UUID fields to strings before returning the response
+    response_data = db_shipment.__dict__.copy()
+    response_data['origin'] = str(response_data['origin'])
+    response_data['destination'] = str(response_data['destination'])
+    
+    return response_data
 
 @app.delete("/delete_shipment/{shipment_id}", response_model=schemas.Shipment)
 def delete_configuration(shipment_id: int, db: Session = Depends(get_db)):
@@ -133,7 +194,13 @@ def delete_configuration(shipment_id: int, db: Session = Depends(get_db)):
         db.commit()
     if db_shipment is None:
         raise HTTPException(status_code=404, detail="Shipment not found")
-    return db_shipment
+    
+    # Convert UUID fields to strings before returning the response
+    response_data = db_shipment.__dict__.copy()
+    response_data['origin'] = str(response_data['origin'])
+    response_data['destination'] = str(response_data['destination'])
+    
+    return response_data
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")
