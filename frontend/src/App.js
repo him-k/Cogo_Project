@@ -101,16 +101,13 @@ const fetchOptions = (inputValue) => {
 };
 
 const Body = () => {
-  const [origin, setOrigin] = useState(null);
-  const [destination, setDestination] = useState(null);
-  const containerDetailRef = useRef(null); // Create a ref for the container detail section
-   const [showContainerDetail, setShowContainerDetail] = useState(false); // Manage visibility of ContainerDetail
-  
-
-  const handleContainerDetailsApply = async (details) => {
+   const [origin, setOrigin] = useState(null); // Changed to use useState once
+  const [destination, setDestination] = useState(null); // Changed to use useState once
+  const containerDetailRef = useRef(null); // Added useRef for scrolling
+  const [showContainerDetail, setShowContainerDetail] = useState(false); // Changed to use useState onceainerDetail, setShowContainerDetail] = useState(false); // Manage visibility of ContainerDetail
   const [id , setId] = useState(0);
-  const containerDetailRef = useRef(null); // Create a ref for the container detail section
-   const [showContainerDetail, setShowContainerDetail] = useState(false); // Manage visibility of ContainerDetail
+
+  
   const handleContainerDetailsApply = async (details , shipmentId , orr , dest) => {
     console.log('Container details:', details);
     if (origin && destination) {
@@ -121,7 +118,7 @@ const Body = () => {
         type: details.type,
         commodity: details.commodity,
         count : details.count,
-        weight : details.weight
+        weight : details.weight,
       };
       try {
         const response = await createShipment(shipmentData);
@@ -145,8 +142,8 @@ const Body = () => {
         size: '',
         type: '',
         commodity: '',
-        count: 0,
-        weight: ''
+        count: 1,
+        weight: '',
       };
   
       try{
@@ -166,12 +163,12 @@ const Body = () => {
     }, 100);
   };
 
-   const handleSearchClick = () => {
-    setShowContainerDetail(true); // Show the ContainerDetail section on search click
-    setTimeout(() => {
-      containerDetailRef.current.scrollIntoView({ behavior: 'smooth' }); // Scroll to container detail section on search click
-    }, 100);
-  };
+  //  const handleSearchClick = () => {
+  //   setShowContainerDetail(true); // Show the ContainerDetail section on search click
+  //   setTimeout(() => {
+  //     containerDetailRef.current.scrollIntoView({ behavior: 'smooth' }); // Scroll to container detail section on search click
+  //   }, 100);
+  // };
 
   const isSearchDisabled = !origin || !destination; // Disable search button if origin or destination is not selected
 
@@ -204,7 +201,7 @@ const Body = () => {
       </div>
       {showContainerDetail && ( // Conditionally render ContainerDetail
         <div id="container-detail" className="containerfrom" ref={containerDetailRef}> {/* Added ref to this div */}
-          <ContainerDetail onApply={handleContainerDetailsApply} />
+          <ContainerDetail onApply={handleContainerDetailsApply} eId={id} orr={origin.label} dest={destination.label} />
         </div>
       )}
           </div>  

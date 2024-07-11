@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import containerTypes from './container-types.json';
 import containerSizes from './container-size.json';
 import { COMMODITY_NAME_MAPPING } from './commodities.js';
-// import ViewButton from './ViewButton'; // Import ViewButton component
 import './container.css';
 
 const ContainerDetail = ({ onApply , eId , orr , dest }) => {
@@ -38,17 +37,6 @@ const ContainerDetail = ({ onApply , eId , orr , dest }) => {
     setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
   };
 
-<<<<<<< HEAD
- const handleSubmit = (e) => {
-  e.preventDefault();
-  setAppliedDetails(details);
-  onApply(details); // Callback to update parent state and show ViewButton
-  setDropdownOpen(false);
-  setShowPopup(true);
-  setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
-};
-
-=======
   const handleSubmit = (e) => {
     e.preventDefault();
     setAppliedDetails(details);
@@ -57,9 +45,10 @@ const ContainerDetail = ({ onApply , eId , orr , dest }) => {
     setShowPopup(true);
     setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
   };
->>>>>>> c023c8b83afae03ffe5a6727ac37a245a60080a8
 
   return (
+    
+
 
      <div className="container-detail">
       <h2>Container Details</h2>
@@ -125,7 +114,7 @@ const ContainerDetail = ({ onApply , eId , orr , dest }) => {
             </select>
           </div>
           <div className="form-group">
-            <label htmlFor="weight">Total Weight per Ctr.</label>
+            <label htmlFor="weight">Total Weight </label>
             <input
               type="text"
               id="weight"
@@ -153,11 +142,7 @@ const ContainerDetail = ({ onApply , eId , orr , dest }) => {
           Your changes have been saved!
         </div>
       )}
-<<<<<<< HEAD
-{/* {showPopup && <ViewButton to="/view-page" text="View Details" />} Show ViewButton after changes saved */}
-=======
 
->>>>>>> c023c8b83afae03ffe5a6727ac37a245a60080a8
     </div>
   );
 };
