@@ -56,7 +56,8 @@ const Home = () => {
       console.error('Origin or destination is missing.');
     }
   }
-
+  
+  
   const handleSearchClick = async() => {
     if (origin && destination) {
       const shipmentData = {

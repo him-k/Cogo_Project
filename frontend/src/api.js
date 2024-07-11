@@ -12,11 +12,15 @@ export const getShipmentById=async(shipmentId)=>{
         return response.data;
 };
 
-export const getShipment=async()=>{
-    const response=await axios.get(`${api_url}/shipments/`);
-        return response.data;
-};
+// export const getShipment=async()=>{
+//     const response=await axios.get(`${api_url}/shipments/`);
+//         return response.data;
+// };
 
+export const getShipment = async (page = 1) => {
+    const response = await axios.get(`${api_url}/shipments/?page=${page}`);
+    return response.data;
+  };
 
 export const updateShipment=async(data , id)=>{
     const response=await axios.put(`${api_url}/shipments/${id}`,data);
@@ -27,4 +31,9 @@ export const updateShipment=async(data , id)=>{
 export const updateShipmentOptional=async(data , id)=>{
     const response=await axios.put(`${api_url}/shipmentsOptionalUpdate/${id}`,data);
         return response.data;
+};
+
+export const deleteShipment = async(id)=>{
+    const response = await axios.delete(`${api_url}/delete_shipment/${id}`);
+    return response.data;
 };

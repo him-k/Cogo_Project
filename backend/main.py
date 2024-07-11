@@ -1,7 +1,8 @@
-from fastapi import FastAPI,Depends,HTTPException
+from fastapi import FastAPI,Depends,HTTPException , Query
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import models,schemas
+from sqlalchemy import desc
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import uvicorn
@@ -50,11 +51,31 @@ def read_shipment(shipment_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Shipment not found")
     return db_shipment
 
+# @app.get("/shipments/", response_model=List[schemas.Shipment])
+# def get_all_shipments(db: Session = Depends(get_db)):
+#     db_shipments = db.query(models.Shipment_details).all()
+#     if not db_shipments:
+#         raise HTTPException(status_code=404, detail="No Shipments found")
+#     return db_shipments
+
 @app.get("/shipments/", response_model=List[schemas.Shipment])
-def get_all_shipments(db: Session = Depends(get_db)):
-    db_shipments = db.query(models.Shipment_details).all()
+def get_all_shipments(
+    page: int = Query(1, ge=1), 
+    page_size: int = Query(5, ge=1), 
+    db: Session = Depends(get_db)
+):
+    offset = (page - 1) * page_size
+    db_shipments = (
+        db.query(models.Shipment_details)
+        .order_by(desc(models.Shipment_details.updated_at))
+        .offset(offset)
+        .limit(page_size)
+        .all()
+    )
+    
     if not db_shipments:
         raise HTTPException(status_code=404, detail="No Shipments found")
+    
     return db_shipments
 
 @app.put("/shipmentsOptionalUpdate/{shipment_id}",response_model=schemas.Shipment)
@@ -80,9 +101,6 @@ def optinal_update(shipment_id:int,shipment:schemas.Shipment_detailsUpdateOption
     return db_shipment
 
 
-
-
-
 @app.put("/shipments/{shipment_id}", response_model=schemas.Shipment)
 def update_shipment(shipment_id: int, shipment: schemas.Shipment_detailsUpdate, db: Session = Depends(get_db)):
     db_shipment = db.query(models.Shipment_details).filter(models.Shipment_details.id == shipment_id).first()
@@ -104,6 +122,17 @@ def update_shipment(shipment_id: int, shipment: schemas.Shipment_detailsUpdate, 
         setattr(db_shipment, field, value)
     db.commit()
     db.refresh(db_shipment)
+    return db_shipment
+
+
+@app.delete("/delete_shipment/{shipment_id}", response_model=schemas.Shipment)
+def delete_configuration(shipment_id: int, db: Session = Depends(get_db)):
+    db_shipment = db.query(models.Shipment_details).filter(models.Shipment_details.id == shipment_id).first()
+    if db_shipment:
+        db.delete(db_shipment)
+        db.commit()
+    if db_shipment is None:
+        raise HTTPException(status_code=404, detail="Shipment not found")
     return db_shipment
 
 if __name__ == "__main__":
