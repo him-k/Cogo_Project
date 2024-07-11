@@ -34,6 +34,7 @@
     background-color: #f9f9f9;
     cursor: pointer;
     position: relative;
+    position: relative;
 }
 
 .applied-details-box h3 {
@@ -125,6 +126,7 @@
     margin: 0;
     font-size: 1.2em;
 }
+
 
 .applied-details {
     position: absolute;

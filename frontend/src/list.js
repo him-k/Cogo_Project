@@ -1,9 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import {getShipment} from './api';
+import React, { useEffect, useState , useRef } from 'react';
+import {getShipment , updateShipment} from './api';
+import ContainerDetail from './ContainerDetail';
+
 import './list.css'; // Create a CSS file for styling
 
 const ViewShipments = () => {
   const [shipments, setShipments] = useState([]);
+  const containerDetailRef = useRef(null); // Create a ref for the container detail section
+
+
+  const handleContainerDetailsApply = async (details , shipmentId , orr , dest) => {
+    console.log('Container details:', details);
+    
+       const shipmentData = {
+        origin: orr,
+        destination: dest,
+        size: details.size,
+        type: details.type,
+        commodity: details.commodity,
+        count : details.count,
+        weight : details.weight
+      };
+      try {
+        const response = await updateShipment(shipmentData , shipmentId);
+        console.log('Shipment Updated:', response);
+      } catch (error) {
+        console.error('Error Updating shipment:', error);
+      }
+    
+  };
 
   useEffect(() => {
     const fetchShipments = async () => {
@@ -45,6 +70,9 @@ const ViewShipments = () => {
               <td>{shipment.commodity}</td>
               <td>{shipment.total_weight}</td>
               <td>{shipment.count}</td>
+              <td> <div id="container-detail" className="select-async-wrapper" ref={containerDetailRef}> {/* Added ref to this div */}
+          <ContainerDetail onApply={handleContainerDetailsApply} eId={shipment.id} orr={shipment.origin} dest={shipment.destination} />
+        </div></td>
             </tr>
           ))}
         </tbody>

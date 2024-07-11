@@ -6,7 +6,7 @@ import { COMMODITY_NAME_MAPPING } from './commodities.js';
 // import ViewButton from './ViewButton'; // Import ViewButton component
 import './container.css';
 
-const ContainerDetail = ({ onApply }) => {
+const ContainerDetail = ({ onApply , eId , orr , dest }) => {
   console.log('COMMODITY_NAME_MAPPING:', COMMODITY_NAME_MAPPING);
 
   const commodities = Object.keys(COMMODITY_NAME_MAPPING).map((key) => ({
@@ -38,6 +38,7 @@ const ContainerDetail = ({ onApply }) => {
     setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
   };
 
+<<<<<<< HEAD
  const handleSubmit = (e) => {
   e.preventDefault();
   setAppliedDetails(details);
@@ -47,6 +48,16 @@ const ContainerDetail = ({ onApply }) => {
   setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
 };
 
+=======
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setAppliedDetails(details);
+    onApply(details , eId , orr , dest);
+    setDropdownOpen(false);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
+  };
+>>>>>>> c023c8b83afae03ffe5a6727ac37a245a60080a8
 
   return (
 
@@ -55,7 +66,7 @@ const ContainerDetail = ({ onApply }) => {
       <div className="current-details-box" onClick={() => setDropdownOpen(!dropdownOpen)}>
        
         <p><mark>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</mark></p>
-        <button type="button">{dropdownOpen ? 'v' : '^'}</button>
+        <span className="dropdown-toggle">{dropdownOpen ? 'v' : '^'}</span>
         {/* {dropdownOpen && (
           <div className="applied-details">
             {<p>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</p> }
@@ -142,7 +153,11 @@ const ContainerDetail = ({ onApply }) => {
           Your changes have been saved!
         </div>
       )}
+<<<<<<< HEAD
 {/* {showPopup && <ViewButton to="/view-page" text="View Details" />} Show ViewButton after changes saved */}
+=======
+
+>>>>>>> c023c8b83afae03ffe5a6727ac37a245a60080a8
     </div>
   );
 };

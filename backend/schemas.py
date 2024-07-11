@@ -6,6 +6,8 @@ class Shipment_detailsBase(BaseModel):
     size: str
     type: str
     commodity: str
+    count : int
+    weight : str
 
 class Shipment_detailsCreate(Shipment_detailsBase):
     pass
@@ -13,6 +15,8 @@ class Shipment_detailsCreate(Shipment_detailsBase):
 class Shipment(Shipment_detailsBase):
     id: int
 
+    class Config:
+        orm_mode = True
 class Shipment_detailsUpdate(Shipment_detailsBase):
     pass
 

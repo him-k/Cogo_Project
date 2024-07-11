@@ -75,7 +75,7 @@ import React, { useState, useRef } from 'react'; // Added useRef for scrolling
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Changed import to include BrowserRouter as Router and Routes
 import SelectAsync from './SelectAsync';
 import ContainerDetail from './ContainerDetail';
-import { createShipment } from './api';  // Import API functions
+import { createShipment , updateShipment } from './api';  // Import API functions
 import { locations } from './data';
 import SearchButton from './searchButton.js';
 import ViewButton from './ViewButton'; // Import ViewButton component
@@ -108,14 +108,20 @@ const Body = () => {
   
 
   const handleContainerDetailsApply = async (details) => {
+  const [id , setId] = useState(0);
+  const containerDetailRef = useRef(null); // Create a ref for the container detail section
+   const [showContainerDetail, setShowContainerDetail] = useState(false); // Manage visibility of ContainerDetail
+  const handleContainerDetailsApply = async (details , shipmentId , orr , dest) => {
     console.log('Container details:', details);
     if (origin && destination) {
-      const shipmentData = {
-        origin: origin.label,
-        destination: destination.label,
+       const shipmentData = {
+        origin: orr,
+        destination: dest,
         size: details.size,
         type: details.type,
-        commodity: details.commodity
+        commodity: details.commodity,
+        count : details.count,
+        weight : details.weight
       };
       try {
         const response = await createShipment(shipmentData);
@@ -123,11 +129,41 @@ const Body = () => {
        
         
       } catch (error) {
+        console.error('Error Updating shipment:', error);
+      }
+    } else {
+      console.error('Origin or destination is missing.');
+    }
+  };
+
+   const handleSearchClick = async () => {
+    
+    if (origin && destination) {
+      const shipmentData = {
+        origin: origin.label,
+        destination: destination.label,
+        size: '',
+        type: '',
+        commodity: '',
+        count: 0,
+        weight: ''
+      };
+  
+      try{
+          const response = await createShipment(shipmentData);
+          setId(response.id);
+          console.log('Shipment created:', response);
+      }
+      catch (error) {
         console.error('Error creating shipment:', error);
       }
     } else {
       console.error('Origin or destination is missing.');
     }
+    setShowContainerDetail(true); // Show the ContainerDetail section on search click
+    setTimeout(() => {
+      containerDetailRef.current.scrollIntoView({ behavior: 'smooth' }); // Scroll to container detail section on search click
+    }, 100);
   };
 
    const handleSearchClick = () => {

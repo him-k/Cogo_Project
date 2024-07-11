@@ -3,12 +3,13 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import models,schemas
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 import uvicorn
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001"],  # Replace with your frontend URL
+    allow_origins=["http://localhost:3000"],  # Replace with your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -53,9 +54,16 @@ def read_shipment(shipment_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Shipment not found")
     return db_shipment
 
+@app.get("/shipments/", response_model=List[schemas.Shipment])
+def get_searches(db: Session = Depends(get_db) , skip : int =0 , limit : int = 100):
+    db_searches = db.query(models.Shipment_details).offset(skip).limit(limit).all()
+    if not db_searches:
+        raise HTTPException(status_code=404, detail="No Shipments found")
+    return db_searches
+
 @app.put("/shipments/{shipment_id}", response_model=schemas.Shipment)
 def update_shipment(shipment_id: int, shipment: schemas.Shipment_detailsUpdate, db: Session = Depends(get_db)):
-    db_shipment = db.query(schemas.Shipment_details).filter(schemas.Shipment_details.id == shipment_id).first()
+    db_shipment = db.query(models.Shipment_details).filter(models.Shipment_details.id == shipment_id).first()
     if db_shipment is None:
         raise HTTPException(status_code=404, detail="Shipment not found")
     for field, value in shipment.dict(exclude_unset=True).items():
