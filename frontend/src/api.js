@@ -22,3 +22,9 @@ export const updateShipment=async(data , id)=>{
     const response=await axios.put(`${api_url}/shipments/${id}`,data);
         return response.data;
 };
+
+
+export const updateShipmentOptional=async(data , id)=>{
+    const response=await axios.put(`${api_url}/shipmentsOptionalUpdate/${id}`,data);
+        return response.data;
+};

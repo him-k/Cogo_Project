@@ -1,5 +1,5 @@
 import React, { useEffect, useState , useRef } from 'react';
-import {getShipment , updateShipment} from './api';
+import {getShipment , updateShipment, updateShipmentOptional} from './api';
 import ContainerDetail from './ContainerDetail';
 
 import './list.css'; // Create a CSS file for styling
@@ -22,7 +22,7 @@ const ViewShipments = () => {
         weight : details.weight
       };
       try {
-        const response = await updateShipment(shipmentData , shipmentId);
+        const response = await updateShipmentOptional(shipmentData , shipmentId);
         console.log('Shipment Updated:', response);
       } catch (error) {
         console.error('Error Updating shipment:', error);
