@@ -5,7 +5,7 @@ import containerSizes from './container-size.json';
 import { COMMODITY_NAME_MAPPING } from './commodities.js';
 import './container.css';
 
-const ContainerDetail = ({ onApply , eId , orr , dest }) => {
+const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
   console.log('COMMODITY_NAME_MAPPING:', COMMODITY_NAME_MAPPING);
 
   const commodities = Object.keys(COMMODITY_NAME_MAPPING).map((key) => ({
@@ -14,11 +14,11 @@ const ContainerDetail = ({ onApply , eId , orr , dest }) => {
   }));
 
   const initialContainerDetails = {
-    size: containerSizes[0]?.label || 'Default Size',
-    type: containerTypes[0]?.label || 'Default Type',
-    commodity: commodities[0]?.label || 'Default Commodity',
-    weight: '18 MT',
-    count: 1,
+    size: initialData?.size || containerSizes[0]?.label || 'Default Size',
+    type: initialData?.type || containerTypes[0]?.label || 'Default Type',
+    commodity: initialData?.commodity || commodities[0]?.label || 'Default Commodity',
+    weight: initialData?.weight || '18 MT',
+    count: initialData?.count || 1,
   };
 
   const [details, setDetails] = useState(initialContainerDetails);
@@ -134,15 +134,13 @@ const ContainerDetail = ({ onApply , eId , orr , dest }) => {
             />
           </div>
           <button type="submit" className="apply-button">Apply</button>
-
         </form>
       )}
       {showPopup && (
         <div className="popup">
           Your changes have been saved!
-        </div>
+          </div>
       )}
-
     </div>
   );
 };

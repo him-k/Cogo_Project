@@ -1,34 +1,11 @@
-import React, { useEffect, useState , useRef } from 'react';
-import {getShipment , updateShipment, updateShipmentOptional} from './api';
-import ContainerDetail from './ContainerDetail';
-
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {getShipment} from './api';
 import './list.css'; // Create a CSS file for styling
 
 const ViewShipments = () => {
   const [shipments, setShipments] = useState([]);
-  const containerDetailRef = useRef(null); // Create a ref for the container detail section
-
-
-  const handleContainerDetailsApply = async (details , shipmentId , orr , dest) => {
-    console.log('Container details:', details);
-    
-       const shipmentData = {
-        origin: orr,
-        destination: dest,
-        size: details.size,
-        type: details.type,
-        commodity: details.commodity,
-        count : details.count,
-        weight : details.weight
-      };
-      try {
-        const response = await updateShipmentOptional(shipmentData , shipmentId);
-        console.log('Shipment Updated:', response);
-      } catch (error) {
-        console.error('Error Updating shipment:', error);
-      }
-    
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchShipments = async () => {
@@ -42,6 +19,10 @@ const ViewShipments = () => {
 
     fetchShipments();
   }, []);
+
+  const handleEditClick = (id) => {
+    navigate(`/edit/${id}`);
+  };
 
   return (
     <div className="view-shipments">
@@ -57,6 +38,7 @@ const ViewShipments = () => {
             <th>Commodity</th>
             <th>Total Weight</th>
             <th>Count</th>
+            <th>Edit</th>
           </tr>
         </thead>
         <tbody>
@@ -68,11 +50,11 @@ const ViewShipments = () => {
               <td>{shipment.size}</td>
               <td>{shipment.type}</td>
               <td>{shipment.commodity}</td>
-              <td>{shipment.total_weight}</td>
+              <td>{shipment.weight}</td>
               <td>{shipment.count}</td>
-              <td> <div id="container-detail" className="select-async-wrapper" ref={containerDetailRef}> {/* Added ref to this div */}
-          <ContainerDetail onApply={handleContainerDetailsApply} eId={shipment.id} orr={shipment.origin} dest={shipment.destination} />
-        </div></td>
+              <td>
+                <button onClick={() => handleEditClick(shipment.id)}>Edit</button>
+              </td>
             </tr>
           ))}
         </tbody>

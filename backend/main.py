@@ -86,6 +86,7 @@ def optinal_update(shipment_id:int,shipment:schemas.Shipment_detailsUpdateOption
 @app.put("/shipments/{shipment_id}", response_model=schemas.Shipment)
 def update_shipment(shipment_id: int, shipment: schemas.Shipment_detailsUpdate, db: Session = Depends(get_db)):
     db_shipment = db.query(models.Shipment_details).filter(models.Shipment_details.id == shipment_id).first()
+    db_shipment = db.query(models.Shipment_details).filter(models.Shipment_details.id == shipment_id).first()
     if db_shipment is None:
         raise HTTPException(status_code=404, detail="Shipment not found")
     
