@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from datetime import date
 
 class Shipment_detailsBase(BaseModel):
     origin: str
@@ -14,6 +15,16 @@ class Shipment_detailsCreate(Shipment_detailsBase):
     pass
     class Config:
         orm_mode = True
+
+class ShipmentQuery(BaseModel):
+    pageno: Optional[int] = 1
+    page_size: Optional[int] = 5
+    origin: Optional[str] = None
+    destination: Optional[str] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    sort_by: Optional[str] = 'updated_at'
+    sort_type: Optional[str] = 'desc'
 
 
 class Shipment(Shipment_detailsBase):

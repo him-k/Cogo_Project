@@ -2,10 +2,11 @@ from fastapi import FastAPI,Depends,HTTPException , Query
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import models,schemas
-from sqlalchemy import desc
+from sqlalchemy import desc,asc
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import uvicorn
+from datetime import date
 app = FastAPI()
 
 app.add_middleware(
@@ -58,25 +59,58 @@ def read_shipment(shipment_id: int, db: Session = Depends(get_db)):
 #         raise HTTPException(status_code=404, detail="No Shipments found")
 #     return db_shipments
 
+# @app.get("/shipments/", response_model=List[schemas.Shipment])
+# def get_all_shipments(
+#     page: int = Query(1, ge=1), 
+#     page_size: int = Query(5, ge=1), 
+#     db: Session = Depends(get_db)
+# ):
+#     offset = (page - 1) * page_size
+#     db_shipments = (
+#         db.query(models.Shipment_details)
+#         .order_by(desc(models.Shipment_details.updated_at))
+#         .offset(offset)
+#         .limit(page_size)
+#         .all()
+#     )
+    
+#     if not db_shipments:
+#         raise HTTPException(status_code=404, detail="No Shipments found")
+    
+#     return db_shipments
+
+
+
 @app.get("/shipments/", response_model=List[schemas.Shipment])
 def get_all_shipments(
-    page: int = Query(1, ge=1), 
-    page_size: int = Query(5, ge=1), 
+    query: schemas.ShipmentQuery,
     db: Session = Depends(get_db)
 ):
-    offset = (page - 1) * page_size
-    db_shipments = (
-        db.query(models.Shipment_details)
-        .order_by(desc(models.Shipment_details.updated_at))
-        .offset(offset)
-        .limit(page_size)
-        .all()
-    )
-    
+    offset = (query.pageno - 1) * query.page_size
+
+    db_query = db.query(models.Shipment_details)
+
+    if query.origin:
+        db_query = db_query.filter(models.Shipment_details.origin == query.origin)
+    if query.destination:
+        db_query = db_query.filter(models.Shipment_details.destination == query.destination)
+    if query.start_date:
+        db_query = db_query.filter(models.Shipment_details.date >= query.start_date)
+    if query.end_date:
+        db_query = db_query.filter(models.Shipment_details.date <= query.end_date)
+
+    if query.sort_type == "asc":
+        db_query = db_query.order_by(asc(getattr(models.Shipment_details, query.sort_by)))
+    else:
+        db_query = db_query.order_by(desc(getattr(models.Shipment_details, query.sort_by)))
+
+    db_shipments = db_query.offset(offset).limit(query.page_size).all()
+
     if not db_shipments:
         raise HTTPException(status_code=404, detail="No Shipments found")
-    
+
     return db_shipments
+
 
 @app.put("/shipmentsOptionalUpdate/{shipment_id}",response_model=schemas.Shipment)
 def optinal_update(shipment_id:int,shipment:schemas.Shipment_detailsUpdateOptional,db: Session = Depends(get_db)):
