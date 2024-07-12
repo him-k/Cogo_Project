@@ -34,13 +34,27 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
+    if (name === 'count') {
+      // Allow empty string for backspace
+      if (value === '' || (Number(value) > 0 && Number.isInteger(Number(value)))) {
+        setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
+      }
+    } else {
+      setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
+    }
+  };
+  const handleBlur = () => {
+    setDetails((prevDetails) => ({
+      ...prevDetails,
+      count: prevDetails.count < 1 ? 1 : prevDetails.count,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setAppliedDetails(details);
-    onApply(details , eId , orr , dest);
+    const updatedDetails = { ...details, count: details.count < 1 ? 1 : details.count };
+    setAppliedDetails(updatedDetails);
+    onApply(updatedDetails , eId , orr , dest);
     setDropdownOpen(false);
     setShowPopup(true);
     setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
@@ -128,6 +142,7 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
               name="count"
               value={details.count}
               onChange={handleChange}
+              onBlur={handleBlur}
             />
           </div>
           <button type="submit" className="apply-button">Apply</button>

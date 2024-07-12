@@ -1,4 +1,4 @@
-import React, { useState,useRef} from 'react';
+import React, { useState,useRef, useEffect} from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import SelectAsync from './SelectAsync';
 import ContainerDetail from './ContainerDetail';
@@ -17,20 +17,24 @@ const fetchOptions =async(inputValue) => {
         query: inputValue // Send inputValue as query parameter
       }
     });
-    const locations=response.data.list;
+    //console.log(response)
+    
+    const locations=response.data.list;     
     return locations
-          .filter((option) =>
-            option.display_name.toLowerCase().includes(inputValue.toLowerCase())
-          )
-          .map((option) => ({
-            value: option.id,
-            label: option.display_name,
-          }))
-     }  catch (error) {
-            console.error('Error fetching locations:', error);
-            return [];
-        }
+    .filter((option) =>
+      option.display_name.toLowerCase().includes(inputValue.toLowerCase())
+    )
+    .map((option) => ({
+      value: option.id,
+      label: option.display_name,
+    }))
+}  catch (error) {
+      console.error('Error fetching locations:', error);
+      return [];
+  }
+        
 };
+
 const Home = () => {
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -38,7 +42,7 @@ const Home = () => {
   const containerDetailRef = useRef(null);
   const [showContainerDetail, setShowContainerDetail] = useState(false);
   const [popupMessage, setPopupMessage] = useState(null);
-  
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleContainerDetailsApply = async (details,shipmentId,orr,dest) => {
     console.log('Container details:', details);
@@ -66,6 +70,11 @@ const Home = () => {
   
   const handleSearchClick = async() => {
     if (origin && destination) {
+      if (origin.label === destination.label) {
+        setPopupMessage('Origin and Destination cannot be the same.');
+        setShowPopup(true);
+        return;
+      }
       const shipmentData = {
         origin: origin.label,
         destination: destination.label,
@@ -79,7 +88,7 @@ const Home = () => {
       try{
           const response = await createShipment(shipmentData);
           if(response==-1){
-            setPopupMessage('Origin and Destination cannot be the same.');
+            setPopupMessage('Origin and Destination cannot be same.');
           }else{
             
           setId(response.id);
@@ -100,7 +109,9 @@ const Home = () => {
 
   const isSearchDisabled = !origin || !destination; // Disable search button if origin or destination is not selected
 
-
+  useEffect(()=>{
+    fetchOptions()
+  })
 
   return (
     <div className="container">
@@ -129,7 +140,14 @@ const Home = () => {
     <ContainerDetail onApply={(details) => handleContainerDetailsApply(details, id, origin.label, destination.label)} />
   </div>
 )}
-   
+ {showPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <p>{popupMessage}</p>
+            <button onClick={() => setShowPopup(false)}>Close</button>
+          </div>
+        </div>
+      )}  
       
       
     </div>

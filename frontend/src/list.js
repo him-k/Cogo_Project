@@ -128,7 +128,7 @@ const ViewShipments = () => {
       <table>
         <thead>
           <tr>
-            <th>ID</th>
+           
             <th>Origin</th>
             <th>Destination</th>
             <th>Size</th>
@@ -143,7 +143,6 @@ const ViewShipments = () => {
         <tbody>
           {shipments.map((shipment) => (
             <tr key={shipment.id}>
-              <td>{shipment.id}</td>
               <td>{shipment.origin}</td>
               <td>{shipment.destination}</td>
               <td>{shipment.size}</td>
