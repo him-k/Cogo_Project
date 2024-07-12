@@ -4,7 +4,7 @@ import containerSizes from './container-size.json';
 import { COMMODITY_NAME_MAPPING } from './commodities.js';
 import {IcMArrowUp,IcMArrowDown, IcASave} from '@cogoport/icons-react';
 import {Radio,Select} from '@cogoport/components';
-import { useForm, Controller } from 'react-hook-form';
+// import { useForm, Controller } from 'react-hook-form';
 import './container.css';
 
 // const commodityMapping =({input,setComi}) =>{
@@ -66,19 +66,11 @@ const [details, setDetails] = useState(initialContainerDetails);
     }
   }, [comi]);
 
-  const handleChange = (selectedOption) => {
-    console.log("Selected Option:", selectedOption);
-    if (selectedOption && selectedOption.value) {
-      setDetails((prevDetails) => ({
-        ...prevDetails,
-        commodity: selectedOption.value,
-      }));
-    }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
   };
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
-  // };
 
   const handleSelectChange = (selectedOption) => {
     console.log("selected option", selectedOption);
@@ -126,7 +118,7 @@ const [details, setDetails] = useState(initialContainerDetails);
         
       </div>
       {dropdownOpen && (
-        <form onSubmit={handleSubmit(onSubmit)} className="dropdown-form">
+        <form onSubmit={handleSubmit} className="dropdown-form">
           <div className="form-group">
             <label htmlFor="size">Size</label>
             <div className="radio-group">

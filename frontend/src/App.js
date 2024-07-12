@@ -45,8 +45,7 @@ const Body = () => {
   const [id , setId] = useState(0);
     const [options, setOptions] = useState([]);
   const [popupMessage, setPopupMessage] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
-
+  
     const handleSearch = (inputValue) => {
       console.log("inputValue",inputValue)
     fetchOptions(inputValue, setOptions);
@@ -78,11 +77,6 @@ const Body = () => {
    const handleSearchClick = async () => {
     
     if (origin && destination) {
-       if (origin.label === destination.label) {
-        setPopupMessage('Origin and Destination cannot be the same.');
-        setShowPopup(true);
-        return;
-      }
       const shipmentData = {
         origin: origin.label,
         destination: destination.label,
@@ -95,14 +89,9 @@ const Body = () => {
   
       try{
           const response = await createShipment(shipmentData);
-          if(response==-1){
-            setPopupMessage('Origin and Destination cannot be same.');
-          }else{
-            
           setId(response.id);
           console.log('Shipment created:', response);
       }
-    }
       catch (error) {
         console.error('Error creating shipment:', error);
       }
@@ -160,14 +149,6 @@ console.log("options",options)
            <ContainerDetail onApply={(details) => handleContainerDetailsApply(details, id, origin.label, destination.label)} />
         </div>
       )}
-       {showPopup && (
-        <div className="popup">
-          <div className="popup-content">
-            <p>{popupMessage}</p>
-            <button onClick={() => setShowPopup(false)}>Close</button>
-          </div>
-        </div>
-      )}  
           </div>  
     
   );
