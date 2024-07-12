@@ -22,3 +22,7 @@ export const updateShipment=async(data , id)=>{
     const response=await axios.put(`${api_url}/shipments/${id}`,data);
         return response.data;
 };
+export const deleteShipment = async(id)=>{
+    const response = await axios.delete(`${api_url}/delete_shipment/${id}`);
+    return response.data;
+};

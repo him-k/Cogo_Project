@@ -1,5 +1,7 @@
 // SearchButton.js
 import React from 'react';
+import {IcMSearchdark} from '@cogoport/icons-react';
+
 
 const SearchButton = ({ onClick, disabled }) => {
   return (
@@ -9,6 +11,8 @@ const SearchButton = ({ onClick, disabled }) => {
       disabled={disabled}
       className="search-button"
     >
+       <IcMSearchdark />
+      
       Search
     </button>
   );

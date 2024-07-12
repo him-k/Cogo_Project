@@ -1,15 +1,4 @@
 
-
-/* .container-detail {
-    padding: 20px;
-
-    border: 1px solid #f6943f;
-    border-radius: 5px;
-  
-        /* Ensure the paragraph maintains its position */
-        /* display: inline-block; */
-/* } */ */
-
 .form-group {
     margin-bottom: 15px;
 }
@@ -18,7 +7,9 @@
     background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 10px 20px;
+    align-items: center;
+    margin-left: 50%;
+    padding: 7px 10px;
     cursor: pointer;
 }
 
@@ -26,37 +17,19 @@
     background-color: #45a049;
 }
 
-.applied-details-box {
-    margin-top: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    cursor: pointer;
-    position: relative;
-    position: relative;
-}
-
-.applied-details-box h3 {
-    margin: 0;
-    margin-bottom: 10px;
-}
-
-.current-details-box {
-    /* display: inline-block; */
-    /* Ensures the box size fits the content */
-    /* padding: 2px 5px;
-    /* Reduced padding */
-    /* cursor: pointer; */
-    /* margin: 10px 0; */
-    border-radius: 5px;
-    background-color: #ffffff;
-    /* Optional background color */
-    border: 1px solid #ccc;
-    /* Adding a border for the box */
-    user-select: none; 
-    /* Prevent cursor (caret) from appearing */
-
+.current-details-box { 
+    display: flex;
+        /* Use flexbox for layout */
+        justify-content: center;
+        /* Center horizontally */
+        align-items: center;
+        /* Center vertically */
+        border-radius: 5px;
+        background-color: #ffffff;
+        padding: 2px;
+        border: 1px solid #ccc;
+        user-select: none;
+        /* Prevent text selection */
 }
 .dropdown-form{
     border-radius: 5px;

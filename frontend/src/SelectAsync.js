@@ -1,6 +1,7 @@
 // SelectAsync.js
 import React from 'react';
 import AsyncSelect from 'react-select/async';
+import './App.css';
 
 const SelectAsync = ({ loadOptions, onChange, value, label }) => (
   <div className="field">

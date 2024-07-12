@@ -1,0 +1,19 @@
+.shipment-box {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-bottom: 20px;
+}
+
+.shipment-box-item {
+    flex: 1;
+}
+
+.box-label {
+    font-weight: bold;
+}
+
+.box-value {
+    margin-top: 5px;
+}
