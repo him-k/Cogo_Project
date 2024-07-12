@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getShipmentById, updateShipment } from './api';
 import ContainerDetail from './ContainerDetail';
 import './editShipment.css';
+import './editShipment.css';
 const EditShipment = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -48,6 +49,15 @@ const EditShipment = () => {
   
   if (!shipment) return <div>Loading...</div>;
 
+  // return (
+  //   <div className="edit-shipment">
+  //     <h1>Edit Container Details</h1>
+  //     <ContainerDetail onApply={(details) => handleContainerDetailsApply(details, id, shipment.origin, shipment.destination)} 
+  //       initialData={shipment}
+  //     />
+
+  //   </div>
+  // );
   return (
     <div className="edit-shipment">
       <h1>Edit Container Details</h1>
@@ -68,7 +78,7 @@ const EditShipment = () => {
       />
 
     </div>
-  );
+  )
 };
 
 export default EditShipment;
