@@ -27,7 +27,7 @@ const fetchOptions = async (inputValue, setOptions) => {
       value: option.id,
       label: option.display_name,
     }));
-    console.log("locations",locations)
+    // console.log("locations",locations)
     setOptions(locations);
   } catch (error) {
     console.error('Error fetching locations:', error);
@@ -44,6 +44,7 @@ const Body = () => {
   const [showContainerDetail, setShowContainerDetail] = useState(false); // Changed to use useState onceainerDetail, setShowContainerDetail] = useState(false); // Manage visibility of ContainerDetail
   const [id , setId] = useState(0);
     const [options, setOptions] = useState([]);
+    const[showPopup,setShowPopup]=useState(null);
   const [popupMessage, setPopupMessage] = useState(null);
   
     const handleSearch = (inputValue) => {
@@ -52,7 +53,7 @@ const Body = () => {
   };
   
   const handleContainerDetailsApply = async (details , shipmentId , orr , dest) => {
-    console.log('Container details:', details);
+   
     if (origin && destination) {
        const shipmentData = {
         origin: orr,
@@ -75,8 +76,13 @@ const Body = () => {
   };
 
    const handleSearchClick = async () => {
-    
+    console.log(origin.label);
     if (origin && destination) {
+      if (origin.label === destination.label) {
+        setPopupMessage('Origin and Destination cannot be the same.');
+        setShowPopup(true);
+        return;
+      }
       const shipmentData = {
         origin: origin.label,
         destination: destination.label,
@@ -89,8 +95,14 @@ const Body = () => {
   
       try{
           const response = await createShipment(shipmentData);
+         
+          if(response==-1){
+            setPopupMessage('Origin and Destination cannot be same.');
+          }else{
+            
           setId(response.id);
           console.log('Shipment created:', response);
+          }
       }
       catch (error) {
         console.error('Error creating shipment:', error);
@@ -109,8 +121,8 @@ const Body = () => {
    const isSearchDisabled = !origin || !destination; // Disable search button if origin or destination is not selected 
   
 
-   
-console.log("options",options)
+  //  console.log(origin);
+// console.log("options",options,origin)
   return (
     
     <div className="container">
@@ -123,8 +135,8 @@ console.log("options",options)
         options={options}
         
         onSearch={handleSearch}
-        onChange={setOrigin}
-        value={origin}
+        onChange={(v,obj)=>setOrigin(obj)}
+        value={origin?.value}
         placeholder="Origin Point"
         style={{ width: '250px' }}
       />
@@ -135,8 +147,8 @@ console.log("options",options)
       className="fixed-size-input" /* Apply fixed-size-input class */
         options={options}
         onSearch={handleSearch}
-        onChange={setDestination}
-        value={destination}
+        onChange={(v,obj)=>setDestination(obj)}
+        value={destination?.value}
         placeholder="Destination Point"
         style={{ width: '250px' }}
       />
@@ -149,6 +161,14 @@ console.log("options",options)
            <ContainerDetail onApply={(details) => handleContainerDetailsApply(details, id, origin.label, destination.label)} />
         </div>
       )}
+      {showPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <p>{popupMessage}</p>
+            <button onClick={() => setShowPopup(false)}>Close</button>
+          </div>
+        </div>
+      )} 
           </div>  
     
   );

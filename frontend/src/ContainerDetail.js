@@ -7,6 +7,13 @@ import {Radio,Select} from '@cogoport/components';
 // import { useForm, Controller } from 'react-hook-form';
 import './container.css';
 
+    const commodities = Object.keys(COMMODITY_NAME_MAPPING).map((key) => ({
+
+      label: COMMODITY_NAME_MAPPING[key].name,
+      value: key,
+    }));
+    console.log("commodities -",commodities)
+
 // const commodityMapping =({input,setComi}) =>{
 //   try {
 // const commodities = Object.keys(COMMODITY_NAME_MAPPING).map((key) => ({
@@ -25,26 +32,22 @@ const ContainerDetail = ({ onApply , eId , orr , dest, initialData }) => {
   console.log('COMMODITY_NAME_MAPPING:', COMMODITY_NAME_MAPPING);
 
   
-  const [comi,setComi] =useState([]);
+  // const [comi,setComi] =useState([]);
 
-   const handleSearch = () => {
+   
     console.log(COMMODITY_NAME_MAPPING);
-    const commodities = Object.keys(COMMODITY_NAME_MAPPING).map((key) => ({
 
-      label: COMMODITY_NAME_MAPPING[key].name,
-      value: key,
-    }));
     console.log(commodities);
-    setComi(commodities);
+    // setComi(commodities);
     
-    console.log(comi);
-  };
+    // console.log("comi",comi);
+  
 
 
  const initialContainerDetails = {
     size: initialData?.size || containerSizes[0]?.label || 'Default Size',
     type: initialData?.type || containerTypes[0]?.label || 'Default Type',
-    commodity: initialData?.commodity || comi[0]?.label || 'Default Commodity',
+    commodity: initialData?.commodity || commodities[0]?.label || 'Default Commodity',
     weight: initialData?.weight || '18 MT',
     count: initialData?.count || 1,
   };
@@ -53,18 +56,19 @@ const ContainerDetail = ({ onApply , eId , orr , dest, initialData }) => {
   //   defaultValues: initialContainerDetails,
   // });
 
-const [details, setDetails] = useState(initialContainerDetails);
+
+  const [details, setDetails] = useState(initialContainerDetails);
   const [appliedDetails, setAppliedDetails] = useState(initialContainerDetails);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-
+  // console.log("commodity",details.commodity);
 
 
   useEffect(() => {
-    if (comi.length === 0) {
+    if (commodities.length === 0) {
       console.warn('Commodities list is empty or key is incorrect.');
     }
-  }, [comi]);
+  }, [commodities]);
 
 
   const handleChange = (e) => {
@@ -74,13 +78,22 @@ const [details, setDetails] = useState(initialContainerDetails);
 
   const handleSelectChange = (selectedOption) => {
     console.log("selected option", selectedOption);
-    if (selectedOption && selectedOption.value){
+     console.log("commodity",details.commodity);
+    if (selectedOption){
     setDetails((prevDetails) => ({
       ...prevDetails,
-      commodity: selectedOption.value,
+      commodity: selectedOption,
     }));
+    console.log(details)
+    
   }
+  console.log("commodity",details.commodity);
+ 
+
   };
+   useEffect(() => {
+    console.log("commodity after change", details.commodity);
+  }, [details.commodity]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -185,11 +198,10 @@ const [details, setDetails] = useState(initialContainerDetails);
             <Select
               name="commodity"
               id="commodity"
-              value={comi.find(option => option.value === details.commodity) || null}
-
-              onSearch={handleSearch}
+              value={details?.commodity}
+              // onSearch={handleSearch}
               onChange={handleSelectChange}
-              options={comi}
+              options={commodities}
               placeholder="commodity"
               style={{width:'250px'}}
             />

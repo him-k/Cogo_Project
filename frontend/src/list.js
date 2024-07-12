@@ -11,6 +11,7 @@ const ViewShipments = () => {
   // const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [currentPage1, setCurrentPage1] = useState(1);
+  
 const onPageChange1 = (pageNumber) => {
 	setCurrentPage1(pageNumber);
 };
@@ -44,10 +45,7 @@ const onPageChange1 = (pageNumber) => {
     navigate(`/edit/${id}`);
   };
 
-  // const handlePageClick = (page) => {
-  //   setCurrentPage(page);
-  // };
-
+ 
   return (
     <div className="view-shipments">
       <h1>Shipments</h1>
