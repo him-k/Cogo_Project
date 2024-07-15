@@ -82,23 +82,38 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getShipment, deleteShipment } from './api';
+import ShipmentFilter from './filter';
+import ParentComponent from './filtercall';
 import './list.css'; // Create a CSS file for styling
 
 const ViewShipments = () => {
   const [shipments, setShipments] = useState([]);
+  const [filteredShipments, setFilteredShipments] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   
   const navigate = useNavigate();
 
-  const fetchShipments = async (page) => {
+  
+  const fetchShipments = async (filters={} ) => {
     try {
-      const response = await getShipment(page);
-      setShipments(response);
-      // setTotalPages(response.totalPages); // Assuming the API returns total pages
+      const response = await getShipment({ ...filters });
+      // if (!Array.isArray(response)) {
+      //   console.error('Expected an array but received:', response);
+      //   return;
+      // }
+      const shipmentsArray = Array.isArray(response) ? response : [];
+
+    // Sort the array
+      const sortedShipments = shipmentsArray.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      setShipments(sortedShipments);
+      setFilteredShipments(sortedShipments);
+      console.log(sortedShipments);
     } catch (error) {
       console.error('Error fetching shipments:', error);
-    }
+    } 
+    
   };
 
   useEffect(() => {
@@ -118,6 +133,10 @@ const ViewShipments = () => {
     navigate(`/edit/${id}`);
   };
 
+  const handleFilter = (filters) => {
+    fetchShipments(filters);
+  };
+
   const handlePageClick = (page) => {
     setCurrentPage(page);
   };
@@ -125,6 +144,7 @@ const ViewShipments = () => {
   return (
     <div className="view-shipments">
       <h1>Shipments</h1>
+      <ShipmentFilter onFilter={handleFilter} />
       <table>
         <thead>
           <tr>
@@ -141,7 +161,7 @@ const ViewShipments = () => {
           </tr>
         </thead>
         <tbody>
-          {shipments.map((shipment) => (
+          {filteredShipments && filteredShipments.map((shipment) => (
             <tr key={shipment.id}>
               <td>{shipment.origin}</td>
               <td>{shipment.destination}</td>

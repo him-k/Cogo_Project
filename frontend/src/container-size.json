@@ -1,18 +1,18 @@
 [
   {
     "label": "20ft",
-    "value": "20"
+    "value": "20ft"
   },
   {
     "label": "40ft",
-    "value": "40"
+    "value": "40ft"
   },
   {
     "label": "40ft HC",
-    "value": "40HC"
+    "value": "40ft HC"
   },
   {
     "label": "45ft HC",
-    "value": "45HC"
+    "value": "45ft HC"
   }
 ]

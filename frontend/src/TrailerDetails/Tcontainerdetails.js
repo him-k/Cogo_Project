@@ -1,11 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
-import containerTypes from './container-types.json';
-import containerSizes from './container-size.json';
+import { IcMArrowUp, IcMArrowDown, IcASave } from '@cogoport/icons-react';
+import { Select } from '@cogoport/components';
+import { packageTypes, handlingTypes} from './ShipmentTypes'; // Import types
+// import './shipment.css'; // Adjust the CSS file name as needed
 import { COMMODITY_NAME_MAPPING } from './commodities.js';
 import './container.css';
 
-const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
+const TrailerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
   console.log('COMMODITY_NAME_MAPPING:', COMMODITY_NAME_MAPPING);
 
   const commodities = Object.keys(COMMODITY_NAME_MAPPING).map((key) => ({
@@ -13,65 +14,58 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
     value: key,
   }));
 
-  const initialContainerDetails = {
-    size: initialData?.size || containerSizes[0]?.label || 'Default Size',
-    type: initialData?.type || containerTypes[0]?.label || 'Default Type',
-    commodity: initialData?.commodity || commodities[0]?.label || 'Default Commodity',
-    weight: initialData?.weight || '18 MT',
-    count: initialData?.count || 1,
-  };
+const initialTrailerDetails = {
+  size: initialData?.size || containerSizes[0]?.label || 'Default Size',
+  type: initialData?.type || containerTypes[0]?.label || 'Default Type',
+  commodity: initialData?.commodity || commodities[0]?.label || 'Default Commodity',
+  weight: initialData?.weight || '18 MT',
+  count: initialData?.count || 1,
+};
 
-  const [details, setDetails] = useState(initialContainerDetails);
-  const [appliedDetails, setAppliedDetails] = useState(initialContainerDetails);
+  const [details, setDetails] = useState(initialTrailerDetails);
+  const [appliedDetails, setAppliedDetails] = useState(initialTrailerDetails);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
-    if (commodities.length === 0) {
-      console.warn('Commodities list is empty or key is incorrect.');
-    }
-  }, [commodities]);
+    console.log('Trailer shipment details:', details);
+  }, [details]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'count') {
-      // Allow empty string for backspace
-      if (value === '' || (Number(value) > 0 && Number.isInteger(Number(value)))) {
-        setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
-      }
-    } else {
-      setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
-    }
+    setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
   };
+
+  const handleSelectChange = (name, value) => {
+    setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
+  };
+
   const handleBlur = () => {
     setDetails((prevDetails) => ({
       ...prevDetails,
-      count: prevDetails.count < 1 ? 1 : prevDetails.count,
+      units: prevDetails.units < 1 ? 1 : prevDetails.units,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    const updatedDetails = { ...details, count: details.count < 1 ? 1 : details.count };
-    setAppliedDetails(updatedDetails);
-    onApply(updatedDetails , eId , orr , dest);
+    setAppliedDetails(details);
+    onApply(details, eId, orr, dest);
     setDropdownOpen(false);
     setShowPopup(true);
-    setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
+    setTimeout(() => setShowPopup(false), 3000);
   };
-  
+
   return (
-    <div className="container-detail">
-      <h2>Container Details</h2>
+    <div className="Trailer-detail">
+      <h2>Trailer Container Details</h2>
       <div className="current-details-box" onClick={() => setDropdownOpen(!dropdownOpen)}>
-       
-        <p><mark>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</mark></p>
+        <p>
+          <mark>
+            {appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}
+          </mark>
+        </p>
         <span className="dropdown-toggle">{dropdownOpen ? 'v' : '^'}</span>
-        {/* {dropdownOpen && (
-          <div className="applied-details">
-            {<p>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</p> }
-          </div>
-        )} */}
       </div>
       {dropdownOpen && (
         <form onSubmit={handleSubmit} className="dropdown-form">
@@ -157,4 +151,4 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
   );
 };
 
-export default ContainerDetail;
+export default TrailerDetail;

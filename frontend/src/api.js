@@ -17,10 +17,22 @@ export const getShipmentById=async(shipmentId)=>{
 //         return response.data;
 // };
 
-export const getShipment = async (page = 1) => {
-    const response = await axios.get(`${api_url}/shipments/?page=${page}`);
-    return response.data;
+export const getShipment = async (filters) => {
+    
+    const response = await axios.get(`${api_url}/shipments/`,{
+        params: {
+        filters:JSON.stringify(filters)
+    }
+    })
+    console.log("response",response);
+    return response.data.list;
   };
+
+// export const getShipment = async (filters) => {
+//     const params = new URLSearchParams(filters).toString();
+//     const response = await axios.get(`/shipments/?${params}`);
+//     return response.data;
+//   };
 
 export const updateShipment=async(data , id)=>{
     const response=await axios.put(`${api_url}/shipments/${id}`,data);
