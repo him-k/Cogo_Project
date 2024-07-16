@@ -281,5 +281,8 @@ def delete_configuration(shipment_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Shipment not found")
     return db_shipment
 
+
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")

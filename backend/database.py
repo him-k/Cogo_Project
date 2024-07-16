@@ -11,7 +11,7 @@ load_dotenv()
 
 #SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
-database_url =  "postgresql://postgres:himani@localhost:5432/newdb"
+database_url =  "postgresql://postgres:himani@localhost:5432/combined"
 
 #creating SQLAlchemy engine
 engine = create_engine(database_url)
