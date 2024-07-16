@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import ShipmentFilter from './filter';
+import ShipmentFilter from './ShipmentFilter';
 import { getShipment} from './api';
 
 const ParentComponent = () => {

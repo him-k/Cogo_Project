@@ -1,51 +1,62 @@
-import React, { useState,useRef, useEffect} from 'react';
-import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useRef,useEffect } from 'react'; // Added useRef for scrolling
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Changed import to include BrowserRouter as Router and Routes
 import SelectAsync from './SelectAsync';
 import ContainerDetail from './ContainerDetail';
-import { createShipment , updateShipment} from './api';  // Import API functions
-import axios from 'axios';
-import ViewShipments from'./list';
+import { createShipment , updateShipment } from './api';  // Import API functions
+import '@cogoport/components/dist/themes/base.css';
+import '@cogoport/components/dist/themes/dawn.css';
 import SearchButton from './searchButton.js';
-import EditShipment from './editShipment';
-
+import { Select} from '@cogoport/components';
+import axios from 'axios';
+import { Link } from 'react-router-dom'; // Import Link from React Router
+import ViewShipments  from './list.js';
+import EditShipment from './editShipment.js';
 import './App.css';
 
-const fetchOptions =async(inputValue) => {
-  try{
+
+
+
+
+const fetchOptions = async (inputValue, setOptions) => {
+  try {
     const response = await axios.get('https://api.stage.cogoport.io/list_locations', {
       params: {
-        query: inputValue // Send inputValue as query parameter
+        filters:{
+          q: inputValue
+        } // Send inputValue as query parameter
       }
     });
-    //console.log(response)
-    
-    const locations=response.data.list;     
-    return locations
-    .filter((option) =>
-      option.display_name.toLowerCase().includes(inputValue.toLowerCase())
-    )
-    .map((option) => ({
+    const locations = response.data.list.map(option => ({
       value: option.id,
       label: option.display_name,
-    }))
-}  catch (error) {
-      console.error('Error fetching locations:', error);
-      return [];
+    }));
+    // console.log("locations",locations)
+    setOptions(locations);
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+    setOptions([]);
   }
-        
 };
 
-const Home = () => {
-  const [origin, setOrigin] = useState(null);
-  const [destination, setDestination] = useState(null);
-  const [id, setId] = useState(null);
-  const containerDetailRef = useRef(null);
-  const [showContainerDetail, setShowContainerDetail] = useState(false);
-  const [popupMessage, setPopupMessage] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
 
-  const handleContainerDetailsApply = async (details,shipmentId,orr,dest) => {
-    console.log('Container details:', details);
+
+const Body = () => {
+   const [origin, setOrigin] = useState(null); // Changed to use useState once
+  const [destination, setDestination] = useState(null); // Changed to use useState once
+  const containerDetailRef = useRef(null); // Added useRef for scrolling
+  const [showContainerDetail, setShowContainerDetail] = useState(false); // Changed to use useState onceainerDetail, setShowContainerDetail] = useState(false); // Manage visibility of ContainerDetail
+  const [id , setId] = useState(0);
+    const [options, setOptions] = useState([]);
+    const[showPopup,setShowPopup]=useState(null);
+  const [popupMessage, setPopupMessage] = useState(null);
+  
+    const handleSearch = (inputValue) => {
+      console.log("inputValue",inputValue)
+    fetchOptions(inputValue, setOptions);
+  };
+  
+  const handleContainerDetailsApply = async (details , shipmentId , orr , dest) => {
+   
     if (origin && destination) {
        const shipmentData = {
         origin: orr,
@@ -54,21 +65,21 @@ const Home = () => {
         type: details.type,
         commodity: details.commodity,
         count : details.count,
-        weight : details.weight
+        weight : details.weight,
       };
       try {
-        const response = await updateShipment(shipmentData , shipmentId);
-        console.log('Shipment Updated:', response);
+        await updateShipment(shipmentData,shipmentId);
+        
       } catch (error) {
         console.error('Error Updating shipment:', error);
       }
     } else {
       console.error('Origin or destination is missing.');
     }
-  }
-  
-  
-  const handleSearchClick = async() => {
+  };
+
+   const handleSearchClick = async () => {
+    console.log(origin.label);
     if (origin && destination) {
       if (origin.label === destination.label) {
         setPopupMessage('Origin and Destination cannot be the same.');
@@ -81,20 +92,21 @@ const Home = () => {
         size: '',
         type: '',
         commodity: '',
-        count: 0,
-        weight: ''
+        count: 1,
+        weight: '',
       };
   
       try{
           const response = await createShipment(shipmentData);
+         
           if(response==-1){
             setPopupMessage('Origin and Destination cannot be same.');
           }else{
             
           setId(response.id);
           console.log('Shipment created:', response);
+          }
       }
-    }
       catch (error) {
         console.error('Error creating shipment:', error);
       }
@@ -107,76 +119,90 @@ const Home = () => {
     }, 100);
   };
 
-  const isSearchDisabled = !origin || !destination; // Disable search button if origin or destination is not selected
+  
 
-  useEffect(()=>{
-    fetchOptions()
-  })
+   const isSearchDisabled = !origin || !destination; // Disable search button if origin or destination is not selected 
+  
 
+  //  console.log(origin);
+// console.log("options",options,origin)
   return (
+    
     <div className="container">
-      <div className="select-async-wrapper">
-      <SelectAsync
-        loadOptions={fetchOptions}
-        onChange={setOrigin}
-        value={origin}
-        label="Origin Point"
+
+      {/* <Test></Test> */}
+      <div className="location" style={{ padding: 16, width: 'fit-content' }}>
+      <Select
+      className="fixed-size-input" /* Apply fixed-size-input class */
+        // Options={fetchOptions}
+        options={options}
+        
+        onSearch={handleSearch}
+        onChange={(v,obj)=>setOrigin(obj)}
+        value={origin?.value}
+        placeholder="Origin Point"
+        style={{ width: '250px' }}
       />
       </div>
 
-      <div className="select-async-wrapper">
-      <SelectAsync
-        loadOptions={fetchOptions}
-        onChange={setDestination}
-        value={destination}
-        label="Destination Point"
+      <div className="location" style={{ padding: 16, width: 'fit-content' }}>
+      <Select
+      className="fixed-size-input" /* Apply fixed-size-input class */
+        options={options}
+        onSearch={handleSearch}
+        onChange={(v,obj)=>setDestination(obj)}
+        value={destination?.value}
+        placeholder="Destination Point"
+        style={{ width: '250px' }}
       />
        </div>
-      <div className="select-async-wrapper">
+      <div className="search button">
         <SearchButton onClick={handleSearchClick} disabled={isSearchDisabled} /> {/* Added SearchButton */}
       </div>
-      {showContainerDetail && (
-  <div id="container-detail" className="select-async-wrapper" ref={containerDetailRef}>
-    <ContainerDetail onApply={(details) => handleContainerDetailsApply(details, id, origin.label, destination.label)} />
-  </div>
-)}
- {showPopup && (
+      {showContainerDetail && ( // Conditionally render ContainerDetail
+        <div id="container-detail" className="containerfrom" ref={containerDetailRef}> {/* Added ref to this div */}
+           <ContainerDetail onApply={(details) => handleContainerDetailsApply(details, id, origin.label, destination.label)} />
+        </div>
+      )}
+      {showPopup && (
         <div className="popup">
           <div className="popup-content">
             <p>{popupMessage}</p>
             <button onClick={() => setShowPopup(false)}>Close</button>
           </div>
         </div>
-      )}  
-      
-      
-    </div>
+      )} 
+          </div>  
+    
   );
 };
+
 
 const App = () => {
   return (
     <Router>
-      <div className="container">
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/view">View Shipments</Link>
-            </li>
-          </ul>
-        </nav>
+      <div className="app-container">
+        <header className="header">
+          <nav>
+            <ul>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/view">View Shipments</Link>
+              </li>
+            </ul>
+          </nav>
+        </header>
         <Routes>
           <Route path="/view" element={<ViewShipments />} />
-          <Route path="/edit/:id" element={<EditShipment />} />
-          <Route path="/" element={<Home />} />
+           <Route path="/edit/:id" element={<EditShipment />} />
+          <Route path="/" element={<Body />} />
         </Routes>
       </div>
     </Router>
   );
 };
-
+  
 
 export default App;

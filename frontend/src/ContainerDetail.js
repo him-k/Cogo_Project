@@ -1,19 +1,37 @@
-
 import React, { useState, useEffect } from 'react';
 import containerTypes from './container-types.json';
 import containerSizes from './container-size.json';
 import { COMMODITY_NAME_MAPPING } from './commodities.js';
+import {IcMArrowUp,IcMArrowDown, IcASave} from '@cogoport/icons-react';
+import {Radio,Select} from '@cogoport/components';
+// import { useForm, Controller } from 'react-hook-form';
 import './container.css';
 
-const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
+    const commodities = Object.keys(COMMODITY_NAME_MAPPING).map((key) => ({
+
+      label: COMMODITY_NAME_MAPPING[key].name,
+      value: key,
+    }));
+    console.log("commodities -",commodities)
+
+
+const ContainerDetail = ({ onApply , eId , orr , dest, initialData }) => {
   console.log('COMMODITY_NAME_MAPPING:', COMMODITY_NAME_MAPPING);
 
-  const commodities = Object.keys(COMMODITY_NAME_MAPPING).map((key) => ({
-    label: COMMODITY_NAME_MAPPING[key].name,
-    value: key,
-  }));
+  
+  // const [comi,setComi] =useState([]);
 
-  const initialContainerDetails = {
+   
+    console.log(COMMODITY_NAME_MAPPING);
+
+    console.log(commodities);
+    // setComi(commodities);
+    
+    // console.log("comi",comi);
+  
+
+
+ const initialContainerDetails = {
     size: initialData?.size || containerSizes[0]?.label || 'Default Size',
     type: initialData?.type || containerTypes[0]?.label || 'Default Type',
     commodity: initialData?.commodity || commodities[0]?.label || 'Default Commodity',
@@ -21,10 +39,17 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
     count: initialData?.count || 1,
   };
 
+  //  const { control, handleSubmit, setValue, watch } = useForm({
+  //   defaultValues: initialContainerDetails,
+  // });
+
+
   const [details, setDetails] = useState(initialContainerDetails);
   const [appliedDetails, setAppliedDetails] = useState(initialContainerDetails);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  // console.log("commodity",details.commodity);
+
 
   useEffect(() => {
     if (commodities.length === 0) {
@@ -32,16 +57,38 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
     }
   }, [commodities]);
 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'count') {
-      // Allow empty string for backspace
-      if (value === '' || (Number(value) > 0 && Number.isInteger(Number(value)))) {
-        setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
-      }
-    } else {
-      setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
-    }
+    setDetails((prevDetails) => ({ ...prevDetails, [name]: value }));
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    console.log("selected option", selectedOption);
+     console.log("commodity",details.commodity);
+    if (selectedOption){
+    setDetails((prevDetails) => ({
+      ...prevDetails,
+      commodity: selectedOption,
+    }));
+    console.log(details)
+    
+  }
+  console.log("commodity",details.commodity);
+ 
+
+  };
+   useEffect(() => {
+    console.log("commodity after change", details.commodity);
+  }, [details.commodity]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setAppliedDetails(details);
+    onApply(details , eId , orr , dest);
+    setDropdownOpen(false);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
   };
   const handleBlur = () => {
     setDetails((prevDetails) => ({
@@ -50,28 +97,25 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const updatedDetails = { ...details, count: details.count < 1 ? 1 : details.count };
-    setAppliedDetails(updatedDetails);
-    onApply(updatedDetails , eId , orr , dest);
+  const onSubmit = (data) => {
+    setAppliedDetails(data);
+    onApply(data, eId, orr, dest);
     setDropdownOpen(false);
     setShowPopup(true);
-    setTimeout(() => setShowPopup(false), 3000); // Hide the popup after 3 seconds
+    setTimeout(() => setShowPopup(false), 3000);
   };
-  
+
   return (
-    <div className="container-detail">
+    
+
+
+     <div className="container-detail">
       <h2>Container Details</h2>
       <div className="current-details-box" onClick={() => setDropdownOpen(!dropdownOpen)}>
        
         <p><mark>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</mark></p>
-        <span className="dropdown-toggle">{dropdownOpen ? 'v' : '^'}</span>
-        {/* {dropdownOpen && (
-          <div className="applied-details">
-            {<p>{appliedDetails.count} x {appliedDetails.size} | {appliedDetails.type} | {appliedDetails.commodity}</p> }
-          </div>
-        )} */}
+        <span className="dropdown-toggle">{dropdownOpen ?  <IcMArrowUp />: <IcMArrowDown />}</span>
+        
       </div>
       {dropdownOpen && (
         <form onSubmit={handleSubmit} className="dropdown-form">
@@ -80,14 +124,16 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
             <div className="radio-group">
               {containerSizes.map((size) => (
                 <label key={size.value}>
-                  <input
-                    type="radio"
+                  <Radio
+                    // type="radio"
                     name="size"
                     value={size.label}
+                  
                     checked={details.size === size.label}
                     onChange={handleChange}
                   />
                   {size.label}
+                   
                 </label>
               ))}
             </div>
@@ -97,10 +143,12 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
             <div className="radio-group">
               {containerTypes.map((type) => (
                 <label key={type.value}>
-                  <input
-                    type="radio"
+                  <Radio
+                    // type="radio"
                     name="type"
                     value={type.label}
+                    disabled={false}
+                    
                     checked={details.type === type.label}
                     onChange={handleChange}
                   />
@@ -111,21 +159,21 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
           </div>
           <div className="form-group">
             <label htmlFor="commodity">Commodity</label>
-            <select
+            <Select
               name="commodity"
               id="commodity"
-              value={details.commodity}
-              onChange={handleChange}
-            >
-              {commodities.map((commodity) => (
-                <option key={commodity.value} value={commodity.label}>
-                  {commodity.label}
-                </option>
-              ))}
-            </select>
+              value={details?.commodity}
+             
+              onChange={handleSelectChange}
+              options={commodities}
+              placeholder="commodity"
+              style={{width:'250px'}}
+            />
+            
           </div>
+
           <div className="form-group">
-            <label htmlFor="weight">Total Weight per Ctr.</label>
+            <label htmlFor="weight">Total Weight </label>
             <input
               type="text"
               id="weight"
@@ -145,14 +193,16 @@ const ContainerDetail = ({ onApply, eId , orr , dest ,initialData}) => {
               onBlur={handleBlur}
             />
           </div>
-          <button type="submit" className="apply-button">Apply</button>
+          <button type="submit" className="apply-button"><IcASave /> Apply</button>
+
         </form>
       )}
       {showPopup && (
         <div className="popup">
           Your changes have been saved!
-          </div>
+        </div>
       )}
+
     </div>
   );
 };

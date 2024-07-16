@@ -38,6 +38,7 @@ class Shipment(Shipment_detailsBase):
         orm_mode = True
 
 class Shipment_detailsUpdate(Shipment_detailsBase):
+    id: int
     origin: str
     destination: str
     size: str
@@ -50,6 +51,7 @@ class Shipment_detailsUpdate(Shipment_detailsBase):
         orm_mode = True
 
 class Shipment_detailsUpdateOptional(Shipment_detailsBase):
+    id: int
     origin: Optional[str] = None
     destination: Optional[str] = None
     size: Optional[str] = None

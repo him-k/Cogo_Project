@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, } from 'react';
+import { useParams,useNavigate } from 'react-router-dom';
 import { getShipmentById, updateShipment } from './api';
 import ContainerDetail from './ContainerDetail';
 import './editShipment.css';
-import './editShipment.css';
-const EditShipment = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [shipment, setShipment] = useState(null);
 
+
+const EditShipment = () => {
+  const { id } = useParams;
+  
+  const [shipment, setShipment] = useState(null);
+  console.log("id",id);
   useEffect(() => {
     const fetchShipment = async () => {
       try {
+        console.log('Fetching shipment with ID:', id);
         const response = await getShipmentById(id);
+        console.log("edit",response);
         setShipment(response);
       } catch (error) {
         console.error('Error fetching shipment:', error);
@@ -49,15 +52,7 @@ const EditShipment = () => {
   
   if (!shipment) return <div>Loading...</div>;
 
-  // return (
-  //   <div className="edit-shipment">
-  //     <h1>Edit Container Details</h1>
-  //     <ContainerDetail onApply={(details) => handleContainerDetailsApply(details, id, shipment.origin, shipment.destination)} 
-  //       initialData={shipment}
-  //     />
-
-  //   </div>
-  // );
+  
   return (
     <div className="edit-shipment">
       <h1>Edit Container Details</h1>

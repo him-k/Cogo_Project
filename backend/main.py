@@ -59,109 +59,6 @@ def read_shipment(shipment_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Shipment not found")
     return db_shipment
 
-# @app.get("/shipments/", response_model=List[schemas.Shipment])
-# def get_all_shipments(db: Session = Depends(get_db)):
-#     db_shipments = db.query(models.Shipment_details).all()
-#     if not db_shipments:
-#         raise HTTPException(status_code=404, detail="No Shipments found")
-#     return db_shipments
-
-# @app.get("/shipments/", response_model=List[schemas.Shipment])
-# def get_shipments(
-#     query: schemas.ShipmentQuery = Depends(),
-#     db: Session = Depends(get_db)
-# ):
-#     offset = (query.pageno - 1) * query.page_size
-
-#     db_query = db.query(models.Shipment_details)
-
-#     if query.origin:
-#         db_query = db_query.filter(models.Shipment_details.origin == query.origin)
-#     if query.destination:
-#         db_query = db_query.filter(models.Shipment_details.destination == query.destination)
-#     if query.start_date:
-#         start_date = date.strptime(query.start_date, "%Y-%m-%d").date()
-#         db_query = db_query.filter(models.Shipment_details.date >= start_date)
-#     if query.end_date:
-#         end_date = date.strptime(query.end_date, "%Y-%m-%d").date()
-#         db_query = db_query.filter(models.Shipment_details.date <= end_date)
-
-#     if query.sort_type == "asc":
-#         db_query = db_query.order_by(asc(getattr(models.Shipment_details, query.sort_by)))
-#     else:
-#         db_query = db_query.order_by(desc(getattr(models.Shipment_details, query.sort_by)))
-
-#     db_shipments = db_query.offset(offset).limit(query.page_size).all()
-
-#     if not db_shipments:
-#         raise HTTPException(status_code=404, detail="No Shipments found")
-
-#   return db_shipments
-
-# @app.get("/shipments/", response_model=List[schemas.Shipment])
-# def get_shipments(
-#     query: schemas.ShipmentQuery = Depends(),
-#     db: Session = Depends(get_db)
-# ):
-#     logger.info(f"Received query: {query}")
-#     offset = (query.pageno - 1) * query.page_size
-
-#     db_query = db.query(models.Shipment_details)
-
-#     if query.origin:
-#         db_query = db_query.filter(models.Shipment_details.origin == query.origin)
-#     if query.destination:
-#         db_query = db_query.filter(models.Shipment_details.destination == query.destination)
-#     if query.start_date:
-#         db_query = db_query.filter(models.Shipment_details.date >= query.start_date)
-#     if query.end_date:
-#         db_query = db_query.filter(models.Shipment_details.date <= query.end_date)
-
-#     if query.sort_by and hasattr(models.Shipment_details, query.sort_by):
-#         if query.sort_type == "asc":
-#             db_query = db_query.order_by(asc(getattr(models.Shipment_details, query.sort_by)))
-#         else:
-#             db_query = db_query.order_by(desc(getattr(models.Shipment_details, query.sort_by)))
-
-#     db_shipments = db_query.offset(offset).limit(query.page_size).all()
-
-#     if not db_shipments:
-#         raise HTTPException(status_code=404, detail="No Shipments found")
-
-#     return db_shipments
-
-
-# @app.get("/shipments/", response_model=List[schemas.Shipment])
-# def get_all_shipments(
-#     query: schemas.ShipmentQuery=Depends(),
-#     db: Session = Depends(get_db)
-# ):
-#     logger.info(f"Received query: {query}")
-#     offset = (query.pageno - 1) * query.page_size
-
-#     db_query = db.query(models.Shipment_details)
-
-#     if query.origin:
-#         db_query = db_query.filter(models.Shipment_details.origin == query.origin)
-#     if query.destination:
-#         db_query = db_query.filter(models.Shipment_details.destination == query.destination)
-#     if query.start_date:
-#         db_query = db_query.filter(models.Shipment_details.date >= query.start_date)
-#     if query.end_date:
-#         db_query = db_query.filter(models.Shipment_details.date <= query.end_date)
-
-#     if query.sort_type == "asc":
-#         db_query = db_query.order_by(asc(getattr(models.Shipment_details, query.sort_by)))
-#     else:
-#         db_query = db_query.order_by(desc(getattr(models.Shipment_details, query.sort_by)))
-
-#     db_shipments = db_query.offset(offset).limit(query.page_size).all()
-
-#     if not db_shipments:
-#         raise HTTPException(status_code=404, detail="No Shipments found")
-
-#     return db_shipments
-
 
 @app.get("/shipments/", response_model=schemas.PaginatedSearchResponse)
 def get_searches(           
@@ -201,7 +98,7 @@ def get_all_searches(
     start_date = filters.get('start_date', None)
     end_date = filters.get('end_date', None)
     sort_by = filters.get('sort_by', 'updated_at')
-    sort_type = filters.get('sort_type', 'desc')
+    orderBy = filters.get('orderBy', 'desc')
 
 
     offset = (page - 1) * page_size
@@ -224,9 +121,9 @@ def get_all_searches(
         db_shipments = db_shipments.filter(models.Shipment_details.updated_at <= end_date)
 
     # Apply sorting
-    if sort_by and sort_type:
+    if sort_by and orderBy:
         sort_attr = getattr(models.Shipment_details, sort_by)
-        if sort_type == "desc":
+        if orderBy == "desc":
             db_shipments = db_shipments.order_by(desc(sort_attr))
         else:
             db_shipments = db_shipments.order_by(sort_attr)
